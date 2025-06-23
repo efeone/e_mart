@@ -1,0 +1,210 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:policy_name",
+ "creation": "2025-06-20 11:00:01.305460",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "policy_details_section",
+  "policy_name",
+  "based_on",
+  "commission_value",
+  "column_break_nqcz",
+  "enabled",
+  "commission_type",
+  "minimum_profit_margin",
+  "applicability_section",
+  "applies_to",
+  "item_group",
+  "territory",
+  "column_break_vbrc",
+  "sales_team_based_split",
+  "customer_group",
+  "sales_partner",
+  "validity_period_section",
+  "valid_from",
+  "column_break_ngbz",
+  "valid_to",
+  "advanced_settings_section",
+  "allow_manual_override",
+  "cap_commission_amount",
+  "column_break_tjlm",
+  "allow_negative_profit",
+  "remarks_section",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "policy_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Policy Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "based_on",
+   "fieldtype": "Select",
+   "label": "Based On",
+   "options": "\nNet Profit\nGross Margin\nNet Sales\nItem-wise\nInvoice-wise"
+  },
+  {
+   "fieldname": "commission_value",
+   "fieldtype": "Float",
+   "label": "Commission Value"
+  },
+  {
+   "fieldname": "column_break_nqcz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "commission_type",
+   "fieldtype": "Select",
+   "label": "Commission Type",
+   "options": "Percentage\nFixed Amount"
+  },
+  {
+   "fieldname": "minimum_profit_margin",
+   "fieldtype": "Float",
+   "label": "Minimum Profit Margin"
+  },
+  {
+   "fieldname": "policy_details_section",
+   "fieldtype": "Section Break",
+   "label": "Policy Details"
+  },
+  {
+   "fieldname": "applicability_section",
+   "fieldtype": "Section Break",
+   "label": "Applicability"
+  },
+  {
+   "fieldname": "applies_to",
+   "fieldtype": "Table MultiSelect",
+   "label": "Applies To",
+   "options": "Applies"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "options": "Item Group"
+  },
+  {
+   "fieldname": "territory",
+   "fieldtype": "Link",
+   "label": "Territory",
+   "options": "Territory"
+  },
+  {
+   "fieldname": "column_break_vbrc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "sales_team_based_split",
+   "fieldtype": "Check",
+   "label": "Sales Team Based Split"
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "options": "Customer Group"
+  },
+  {
+   "fieldname": "sales_partner",
+   "fieldtype": "Link",
+   "label": "Sales Partner",
+   "options": "Sales Partner"
+  },
+  {
+   "fieldname": "validity_period_section",
+   "fieldtype": "Section Break",
+   "label": "Validity Period"
+  },
+  {
+   "fieldname": "valid_from",
+   "fieldtype": "Date",
+   "label": "Valid From"
+  },
+  {
+   "fieldname": "column_break_ngbz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "valid_to",
+   "fieldtype": "Date",
+   "label": "Valid To"
+  },
+  {
+   "fieldname": "advanced_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Advanced Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_manual_override",
+   "fieldtype": "Check",
+   "label": "Allow Manual Override"
+  },
+  {
+   "fieldname": "cap_commission_amount",
+   "fieldtype": "Currency",
+   "label": "Cap Commission Amount"
+  },
+  {
+   "fieldname": "column_break_tjlm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_negative_profit",
+   "fieldtype": "Check",
+   "label": "Allow Negative Profit"
+  },
+  {
+   "fieldname": "remarks_section",
+   "fieldtype": "Section Break",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-20 12:00:07.038559",
+ "modified_by": "Administrator",
+ "module": "E Mart",
+ "name": "Sales Commission Policy",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
