@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:DNL-{DD}{MM}{YY}-{####}",
+ "creation": "2025-06-20 10:30:18.801973",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "supplier",
+  "purchase_schema",
+  "column_break_xbld",
+  "purchase_invoice",
+  "status",
+  "section_break_lsbc",
+  "items",
+  "section_break_omvk",
+  "amended_from",
+  "supplier_credit_note_no",
+  "supplier_credit_note",
+  "column_break_adat",
+  "total_invoice_amount",
+  "discounted_amount",
+  "references_section",
+  "jv_reference"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Supplier",
+   "options": "Supplier",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xbld",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "purchase_invoice",
+   "fieldtype": "Link",
+   "label": "Purchase Invoice",
+   "options": "Purchase Invoice"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nSubmitted\nRejected\nCancelled"
+  },
+  {
+   "fieldname": "section_break_omvk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Debit Note Log",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "jv_reference",
+   "fieldtype": "Link",
+   "label": "JV Reference",
+   "options": "Journal Entry"
+  },
+  {
+   "fieldname": "supplier_credit_note_no",
+   "fieldtype": "Data",
+   "label": "Supplier Credit Note No."
+  },
+  {
+   "fieldname": "section_break_lsbc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "supplier_credit_note",
+   "fieldtype": "Attach",
+   "label": "Supplier Credit Note"
+  },
+  {
+   "fieldname": "column_break_adat",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_invoice_amount",
+   "fieldtype": "Currency",
+   "label": "Total Invoice Amount"
+  },
+  {
+   "fieldname": "discounted_amount",
+   "fieldtype": "Currency",
+   "label": "Discounted Amount"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Debit Note Item"
+  },
+  {
+   "fieldname": "purchase_schema",
+   "fieldtype": "Select",
+   "label": "Purchase Schema",
+   "options": "Item-wise\nInvoice-level"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "references_section",
+   "fieldtype": "Section Break",
+   "label": "References"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-06-27 11:04:41.344312",
+ "modified_by": "Administrator",
+ "module": "E Mart",
+ "name": "Debit Note Log",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

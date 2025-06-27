@@ -82,13 +82,13 @@ app_license = "mit"
 # Installation
 # ------------
 
-# before_install = "e_mart.install.before_install"
-# after_install = "e_mart.install.after_install"
+after_install = "e_mart.setup.after_install"
+after_migrate = "e_mart.setup.after_migrate"
 
 # Uninstallation
 # ------------
 
-# before_uninstall = "e_mart.uninstall.before_uninstall"
+before_uninstall = "e_mart.setup.before_uninstall"
 # after_uninstall = "e_mart.uninstall.after_uninstall"
 
 # Integration Setup
@@ -137,13 +137,15 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    "Serial and Batch Bundle": {
+        "on_submit": "e_mart.e_mart.custom_scripts.serial_and_batch_bundle.serial_and_batch_bundle.set_purchase_category_from_voucher"
+    },
+    "Purchase Receipt": {
+        "before_insert": "e_mart.e_mart.custom_scripts.purchase_order.purchase_order.fetch_purchase_category"
+    }
+}
+
 
 # Scheduled Tasks
 # ---------------
@@ -241,4 +243,3 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-
