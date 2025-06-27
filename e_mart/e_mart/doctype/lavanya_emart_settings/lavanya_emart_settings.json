@@ -5,7 +5,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "purchase_series_mapping"
+  "purchase_series_mapping",
+  "debit_note_adjusted_account"
  ],
  "fields": [
   {
@@ -13,13 +14,19 @@
    "fieldtype": "Table",
    "label": "Purchase Series Mapping",
    "options": "Purchase Series Mapping"
+  },
+  {
+   "fieldname": "debit_note_adjusted_account",
+   "fieldtype": "Link",
+   "label": "Debit Note Adjusted Account",
+   "options": "Account"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-23 11:26:41.788658",
+ "modified": "2025-06-27 10:16:42.884342",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "Lavanya Emart Settings",
