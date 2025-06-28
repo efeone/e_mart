@@ -12,6 +12,7 @@ def after_install():
     create_custom_fields(get_sales_order_item_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_sales_invoice_item_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_serial_and_batch_entry_custom_fields(), ignore_validate=True, update=True)
+    create_custom_fields(get_purchase_invoice_item_custom_fields(),ignore_validate=True, update=True)
 
     create_property_setters(get_property_setters())
 
@@ -25,6 +26,7 @@ def before_uninstall():
     delete_custom_fields(get_sales_order_item_custom_fields())
     delete_custom_fields(get_sales_invoice_item_custom_fields())
     delete_custom_fields(get_serial_and_batch_entry_custom_fields())
+    delete_custom_fields(get_purchase_invoice_item_custom_fields())
 
 
 def delete_custom_fields(custom_fields: dict):
@@ -87,6 +89,34 @@ def get_purchase_invoice_custom_fields():
                 "label": "Purchase Category",
                 "options": "Normal\nSpecial",
                 "insert_after": "apply_tds"
+            },
+            {
+                "fieldname": "purchase_schema",
+                "fieldtype": "Select",
+                "label": "Purchase Schema",
+                "options": "Item-Wise\nInvoice-level",
+                "insert_after": "supplier"
+			},
+            {
+                "fieldname": "schema_discount_amount",
+                "fieldtype": "Currency",
+                "label": "Schema Discount Amount",
+                "insert_after": "items"
+			},
+        ]
+    }
+
+def get_purchase_invoice_item_custom_fields():
+    """
+    Custom fields that need to be added to the Purchase Invoice Item DocType
+    """
+    return {
+        "Purchase Invoice Item": [   
+            {
+                "fieldname": "schema_discount_amount",
+                "fieldtype": "Currency",
+                "label": "Schema Discount Amount",
+                "insert_after": "amount"  
             }
         ]
     }
