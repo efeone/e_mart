@@ -44,9 +44,9 @@
  "issingle": 1,
  "links": [],
  "modified": "2025-06-30 13:28:21.836463",
- "modified_by": "administrator@example.com",
+ "modified_by": "Administrator",
  "module": "E Mart",
- "name": "Lavanya Emart Settings",
+ "name": "E-mart Settings",
  "owner": "Administrator",
  "permissions": [
   {

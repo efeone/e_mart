@@ -1,7 +1,7 @@
 // Copyright (c) 2025, efeone and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("Lavanya Emart Settings", {
+// frappe.ui.form.on("E-mart Settings", {
 // 	refresh(frm) {
 
 // 	},

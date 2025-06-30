@@ -100,13 +100,13 @@ def get_purchase_invoice_custom_fields():
                 "label": "Purchase Schema",
                 "options": "Item-Wise\nInvoice-level",
                 "insert_after": "supplier"
-			},
+            },
             {
                 "fieldname": "schema_discount_amount",
                 "fieldtype": "Currency",
                 "label": "Schema Discount Amount",
                 "insert_after": "items"
-			},
+            },
         ]
     }
 
@@ -143,25 +143,25 @@ def get_item_custom_fields():
                 "fieldtype": "Float",
                 "label": "Commission Value",
                 "insert_after": "type_of_commission"
-			},
+            },
             {
                 "fieldname": "demo_required",
                 "fieldtype": "Check",
                 "label": "Demo Required",
                 "insert_after": "commission_value"
-			},
+            },
             {
                 "fieldname": "periodic_service",
                 "fieldtype": "Check",
                 "label": "Periodic Service",
                 "insert_after": "demo_required"
-			},
+            },
             {
                 "fieldname": "mrp",
                 "fieldtype": "Float",
                 "label": "MRP",
                 "insert_after": "periodic_service"
-			},
+            },
         ]
     }
 
@@ -182,7 +182,7 @@ def get_customer_custom_fields():
                 "fieldtype": "Date",
                 "label": "EMI Start Date",
                 "insert_after": "is_provider"
-			}
+            }
         ]
     }
 
