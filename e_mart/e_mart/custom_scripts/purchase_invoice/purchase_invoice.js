@@ -23,6 +23,9 @@ frappe.ui.form.on('Purchase Invoice Item', {
     }
 });
 
+/**
+ * function to calculate the total of schema discount amount from items table
+ */
 function update_schema_discount_amount_total(frm) {
     let total = 0;
     (frm.doc.items || []).forEach(row => {

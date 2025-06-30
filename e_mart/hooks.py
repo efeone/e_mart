@@ -144,8 +144,8 @@ doc_events = {
     "Purchase Receipt": {
         "before_insert": "e_mart.e_mart.custom_scripts.purchase_order.purchase_order.fetch_purchase_category"
     },
-	"Purchase Invoice": {
-        "validate": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.update_schema_discount_amount"
+    "Purchase Invoice": {
+        "before_save": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.update_schema_discount_amount"
     }
 }
 
