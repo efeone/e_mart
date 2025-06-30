@@ -187,7 +187,6 @@ def get_customer_custom_fields():
         ]
     }
 
-
 def get_sales_order_item_custom_fields():
     """
     Custom fields that need to be added to the Sales Order Item DocType
