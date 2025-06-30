@@ -5,7 +5,7 @@ def set_purchase_category_from_voucher(doc, method):
     Fetches and sets the purchase category from either Purchase Receipt or Purchase Invoice
     to each entry row.
     '''
-    if doc.voucher_type not in ["Purchase Receipt", "Purchase Invoice"] or not doc.voucher_no:
+    if doc.voucher_type not in ["Purchase Receipt", "Purchase Invoice", "Stock Reconciliation"] or not doc.voucher_no:
         return
 
     try:
