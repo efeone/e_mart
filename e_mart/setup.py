@@ -98,15 +98,16 @@ def get_purchase_invoice_custom_fields():
                 "fieldname": "purchase_schema",
                 "fieldtype": "Select",
                 "label": "Purchase Schema",
-                "options": "Item-Wise\nInvoice-level",
+                "options": "Item-wise\nInvoice-level",
                 "insert_after": "supplier"
             },
             {
                 "fieldname": "schema_discount_amount",
                 "fieldtype": "Currency",
                 "label": "Schema Discount Amount",
-                "insert_after": "items"
-            },
+                "insert_after": "items",
+                "read_only_depends_on": "eval:doc.purchase_schema == 'Item-wise'"
+			}
         ]
     }
 
@@ -115,12 +116,12 @@ def get_purchase_invoice_item_custom_fields():
     Custom fields that need to be added to the Purchase Invoice Item DocType
     """
     return {
-        "Purchase Invoice Item": [   
+        "Purchase Invoice Item": [
             {
                 "fieldname": "schema_discount_amount",
                 "fieldtype": "Currency",
                 "label": "Schema Discount Amount",
-                "insert_after": "amount"  
+                "insert_after": "amount"
             }
         ]
     }

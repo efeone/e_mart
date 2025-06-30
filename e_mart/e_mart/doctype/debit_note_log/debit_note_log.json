@@ -15,11 +15,16 @@
   "items",
   "section_break_omvk",
   "amended_from",
-  "supplier_credit_note_no",
-  "supplier_credit_note",
-  "column_break_adat",
   "total_invoice_amount",
+  "column_break_adat",
   "discounted_amount",
+  "section_break_lxyh",
+  "credit_note_details_column",
+  "supplier_credit_note_no",
+  "attach",
+  "column_break_ycsh",
+  "date",
+  "supplier_credit_note_amount",
   "references_section",
   "jv_reference"
  ],
@@ -63,6 +68,7 @@
    "search_index": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "jv_reference",
    "fieldtype": "Link",
    "label": "JV Reference",
@@ -76,11 +82,6 @@
   {
    "fieldname": "section_break_lsbc",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "supplier_credit_note",
-   "fieldtype": "Attach",
-   "label": "Supplier Credit Note"
   },
   {
    "fieldname": "column_break_adat",
@@ -113,13 +114,41 @@
    "fieldname": "references_section",
    "fieldtype": "Section Break",
    "label": "References"
+  },
+  {
+   "fieldname": "section_break_lxyh",
+   "fieldtype": "Section Break",
+   "label": "Credit Note Details"
+  },
+  {
+   "fieldname": "credit_note_details_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "attach",
+   "fieldtype": "Attach",
+   "label": "Attach"
+  },
+  {
+   "fieldname": "column_break_ycsh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "supplier_credit_note_amount",
+   "fieldtype": "Currency",
+   "label": "Supplier Credit Note Amount"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-27 11:04:41.344312",
+ "modified": "2025-06-27 12:28:32.656273",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "Debit Note Log",
