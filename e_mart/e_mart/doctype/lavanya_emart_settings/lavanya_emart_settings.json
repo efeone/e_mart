@@ -6,7 +6,10 @@
  "engine": "InnoDB",
  "field_order": [
   "purchase_series_mapping",
-  "debit_note_adjusted_account"
+  "section_break_ecmj",
+  "debit_note_adjusted_account",
+  "column_break_nwjy",
+  "scrap_warehouse"
  ],
  "fields": [
   {
@@ -20,14 +23,28 @@
    "fieldtype": "Link",
    "label": "Debit Note Adjusted Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "section_break_ecmj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_nwjy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scrap_warehouse",
+   "fieldtype": "Link",
+   "label": "Scrap Warehouse",
+   "options": "Warehouse"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-27 10:16:42.884342",
- "modified_by": "Administrator",
+ "modified": "2025-06-30 13:28:21.836463",
+ "modified_by": "administrator@example.com",
  "module": "E Mart",
  "name": "Lavanya Emart Settings",
  "owner": "Administrator",
@@ -43,6 +60,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
