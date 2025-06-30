@@ -15,6 +15,7 @@ def after_install():
     create_custom_fields(get_purchase_invoice_item_custom_fields(),ignore_validate=True, update=True)
     create_custom_fields(get_item_custom_fields(),ignore_validate=True, update=True)
     create_custom_fields(get_customer_custom_fields(),ignore_validate=True, update=True)
+    create_custom_fields(get_stock_reconciliation_custom_fields(),ignore_validate=True, update=True)
 
     create_property_setters(get_property_setters())
 
@@ -31,6 +32,7 @@ def before_uninstall():
     delete_custom_fields(get_purchase_invoice_item_custom_fields())
     delete_custom_fields(get_item_custom_fields())
     delete_custom_fields(get_customer_custom_fields())
+    delete_custom_fields(get_stock_reconciliation_custom_fields())
 
 
 def delete_custom_fields(custom_fields: dict):
@@ -230,6 +232,22 @@ def get_serial_and_batch_entry_custom_fields():
                 "options": "Normal\nSpecial",
                 "insert_after": "batch_no",
                 "allow_on_submit": 1
+            }
+        ]
+    }
+
+def get_stock_reconciliation_custom_fields():
+    """
+    Custom fields that need to be added to the Stock Reconciliation DocType
+    """
+    return {
+        "Stock Reconciliation": [
+            {
+                "fieldname": "purchase_category",
+                "fieldtype": "Select",
+                "label": "Purchase Category",
+                "options": "Normal\nSpecial",
+                "insert_after": "set_posting_time"
             }
         ]
     }
