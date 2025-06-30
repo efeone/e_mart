@@ -14,6 +14,7 @@ def after_install():
     create_custom_fields(get_serial_and_batch_entry_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_purchase_invoice_item_custom_fields(),ignore_validate=True, update=True)
     create_custom_fields(get_item_custom_fields(),ignore_validate=True, update=True)
+    create_custom_fields(get_customer_custom_fields(),ignore_validate=True, update=True)
 
     create_property_setters(get_property_setters())
 
@@ -29,6 +30,7 @@ def before_uninstall():
     delete_custom_fields(get_serial_and_batch_entry_custom_fields())
     delete_custom_fields(get_purchase_invoice_item_custom_fields())
     delete_custom_fields(get_item_custom_fields())
+    delete_custom_fields(get_customer_custom_fields())
 
 
 def delete_custom_fields(custom_fields: dict):
@@ -162,6 +164,28 @@ def get_item_custom_fields():
 			},
         ]
     }
+
+def get_customer_custom_fields():
+    """
+    Custom fields that need to be added to the Customer DocType
+    """
+    return {
+        "Customer": [
+            {
+                "fieldname": "is_provider",
+                "fieldtype": "Check",
+                "label": "Is Provider",
+                "insert_after": "customer_group"
+            },
+            {
+                "fieldname": "emi_start_date",
+                "fieldtype": "Date",
+                "label": "EMI Start Date",
+                "insert_after": "is_provider"
+			}
+        ]
+    }
+
 
 def get_sales_order_item_custom_fields():
     """
