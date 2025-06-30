@@ -1,19 +1,5 @@
-
-function update_schema_discount_amount_total(frm) {
-    let total = 0;
-    (frm.doc.items || []).forEach(row => {
-        if (row.schema_discount_amount) {
-            total += row.schema_discount_amount;
-        }
-    });
-    frm.set_value('schema_discount_amount', total);
-}
-
-frappe.ui.form.on('Purchase Invoice Item', {
-    schema_discount_amount: function(frm) {
-        update_schema_discount_amount_total(frm);
-    }
-});
+// Copyright (c) 2025, efeone and contributors
+// For license information, please see license.txt
 
 frappe.ui.form.on('Purchase Invoice', {
     onload: function(frm) {
@@ -30,4 +16,20 @@ frappe.ui.form.on('Purchase Invoice', {
         });
     }
 });
+
+frappe.ui.form.on('Purchase Invoice Item', {
+    schema_discount_amount: function(frm) {
+        update_schema_discount_amount_total(frm);
+    }
+});
+
+function update_schema_discount_amount_total(frm) {
+    let total = 0;
+    (frm.doc.items || []).forEach(row => {
+        if (row.schema_discount_amount) {
+            total += row.schema_discount_amount;
+        }
+    });
+    frm.set_value('schema_discount_amount', total);
+}
 
