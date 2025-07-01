@@ -1,6 +1,11 @@
 frappe.ui.form.on('Sales Invoice', {
     onload(frm) {
         update_total_buyback_amount(frm);
+        set_customer_filter(frm);
+    },
+
+    sales_type(frm) {
+        set_customer_filter(frm);
     },
 
     validate(frm) {
@@ -39,4 +44,26 @@ function update_total_buyback_amount(frm) {
         total += row.amount || 0;
     });
     frm.set_value('buyback_amount', total);
+}
+
+function set_customer_filter(frm) {
+    frm.set_query("customer", () => {
+        if (frm.doc.sales_type === "EMI") {
+            return {
+                filters: {
+                    is_provider: 1
+                }
+            };
+        } else {
+            return {};
+        }
+    });
+
+    if (frm.doc.sales_type === "EMI" && frm.doc.customer) {
+        frappe.db.get_value("Customer", frm.doc.customer, "is_provider", (r) => {
+            if (r && r.is_provider !== 1) {
+                frm.set_value("customer", null);
+            }
+        });
+    }
 }
