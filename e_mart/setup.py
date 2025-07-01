@@ -203,6 +203,12 @@ def get_sales_order_item_custom_fields():
                 "fieldtype": "Check",
                 "label": "Allow Commission",
                 "insert_after": "item_tax_template"
+            },
+            {
+                "fieldname": "profit_for_commission",
+                "fieldtype": "Currency",
+                "label": "Profit for Commission",
+                "insert_after": "allow_commission"
             }
         ]
     }
@@ -218,6 +224,12 @@ def get_sales_invoice_item_custom_fields():
                 "fieldtype": "Check",
                 "label": "Allow Commission",
                 "insert_after": "item_tax_template"
+            },
+            {
+                "fieldname": "profit_for_commission",
+                "fieldtype": "Currency",
+                "label": "Profit for Commission",
+                "insert_after": "allow_commission"
             }
         ]
     }
