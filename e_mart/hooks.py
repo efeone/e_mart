@@ -26,7 +26,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/e_mart/css/e_mart.css"
-# app_include_js = "/assets/e_mart/js/e_mart.js"
+app_include_js = "/assets/e_mart/js/sales_invoice.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/e_mart/css/e_mart.css"
@@ -43,7 +43,10 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Purchase Invoice" : "e_mart/custom_scripts/purchase_invoice/purchase_invoice.js"}
+doctype_js = {
+	"Purchase Invoice" : "e_mart/custom_scripts/purchase_invoice/purchase_invoice.js",
+	"Sales Invoice" : "e_mart/custom_scripts/sales_invoice/sales_invoice.js"
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -147,6 +150,9 @@ doc_events = {
     "Purchase Invoice": {
         "before_save": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.update_schema_discount_amount",
         "on_submit": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.on_submit"
+    },
+	"Sales Invoice": {
+         "validate": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields"
     }
 }
 

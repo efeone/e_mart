@@ -16,6 +16,7 @@ def after_install():
     create_custom_fields(get_item_custom_fields(),ignore_validate=True, update=True)
     create_custom_fields(get_customer_custom_fields(),ignore_validate=True, update=True)
     create_custom_fields(get_stock_reconciliation_custom_fields(),ignore_validate=True, update=True)
+    create_custom_fields(get_sales_invoice_custom_fields(), ignore_validate=True, update=True)
 
     create_property_setters(get_property_setters())
 
@@ -33,6 +34,8 @@ def before_uninstall():
     delete_custom_fields(get_item_custom_fields())
     delete_custom_fields(get_customer_custom_fields())
     delete_custom_fields(get_stock_reconciliation_custom_fields())
+    delete_custom_fields(get_sales_invoice_custom_fields())
+    
 
 
 def delete_custom_fields(custom_fields: dict):
@@ -286,3 +289,66 @@ def get_property_setters():
             "value": 1
         }
     ]
+def get_sales_invoice_custom_fields():
+    return {
+        "Sales Invoice": [
+            {
+                "fieldname": "sales_type",
+                "fieldtype": "Select",
+                "label": "Sales Type",
+                "options": "\nCash\nCredit\nEMI",
+                "insert_after": "is_debit_note"
+            },
+            {
+                "fieldname": "actual_customer",
+                "fieldtype": "Link",
+                "label": "Actual Customer",
+                "options": "Customer",
+                "depends_on": "eval:doc.sales_type == 'EMI' && doc.customer",
+                "insert_after": "customer"
+            },
+            {
+                "fieldname": "is_buyback",
+                "fieldtype": "Check",
+                "label": "Is Buyback",
+                "insert_after": "actual_customer"
+            },
+            {
+                "fieldname": "buyback_section",
+                "fieldtype": "Section Break",
+                "label": "",
+                "insert_after": "sales_type"
+            },
+            {
+                "fieldname": "buyback_items",
+                "fieldtype": "Table",
+                "label": "Buyback Items",
+                "options": "Buyback Item",
+                "insert_after": "buyback_section",
+                "depends_on": "eval:doc.is_buyback"
+            },
+            {
+                "fieldname": "buyback_amount_section",
+                "fieldtype": "Section Break",
+                "label": "",
+                "insert_after": "buyback_items",
+                "depends_on": "eval:doc.is_buyback"
+            },
+            {
+                "fieldname": "buyback_column_break",
+                "fieldtype": "Column Break",
+                "insert_after": "buyback_amount_section"
+            },
+            {
+                "fieldname": "buyback_items_column_break",
+                "fieldtype": "Column Break",
+                "insert_after": "buyback_column_break"
+            },
+            {
+                "fieldname": "buyback_amount",
+                "fieldtype": "Currency",
+                "label": "Buyback Amount",
+                "insert_after": "buyback_items_column_break"
+            }
+        ]
+    }
