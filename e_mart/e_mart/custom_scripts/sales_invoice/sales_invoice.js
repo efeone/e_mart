@@ -1,16 +1,28 @@
 frappe.ui.form.on('Sales Invoice', {
-    // Triggered when the form is loaded
     onload(frm) {
         update_total_buyback_amount(frm);
         set_customer_filter(frm);
     },
-
-    // Triggered when the sales_type field is changed
+    refresh: function (frm) {
+        if (frm.doc.docstatus === 1 && frm.doc.sales_type == "EMI") {
+            frm.add_custom_button(__('Finance Invoice'), function () {
+                frappe.call({
+                    method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_finance_invoice",
+                    args: {
+                        sales_invoice_name: frm.doc.name
+                    },
+                    callback: function (r) {
+                        if (r.message) {
+                            frappe.set_route('Form', 'Finance Invoice', r.message);
+                        }
+                    }
+                });
+            }, __('Create'));
+        }
+    },
     sales_type(frm) {
         set_customer_filter(frm);
     },
-
-    // Triggered before saving or submitting the form
     // If is_buyback is checked, subtract buyback_amount from outstanding_amount
     validate(frm) {
         if (frm.doc.is_buyback && frm.doc.buyback_amount) {
@@ -21,22 +33,15 @@ frappe.ui.form.on('Sales Invoice', {
 });
 
 frappe.ui.form.on('Buyback Item', {
-    // Recalculate amount when quantity is changed
     qty(frm, cdt, cdn) {
         calculate_row_amount(frm, cdt, cdn);
     },
-
-    // Recalculate amount when rate is changed
     rate(frm, cdt, cdn) {
         calculate_row_amount(frm, cdt, cdn);
     },
-
-    // Update total buyback amount when a new row is added
     buyback_items_add(frm) {
         update_total_buyback_amount(frm);
     },
-
-    // Update total buyback amount when a row is removed
     buyback_items_remove(frm) {
         update_total_buyback_amount(frm);
     }
