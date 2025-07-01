@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import flt
+from frappe.utils import flt,add_months
 
 def validate_buyback_fields(doc, method=None):
 	
@@ -60,3 +60,41 @@ def create_scrap_stock_entry(doc, method):
 	stock_entry.insert()
 	stock_entry.submit()
 	frappe.msgprint(f' Scrap Stock Entry Created: <a href="{frappe.utils.get_url_to_form(stock_entry.doctype, stock_entry.name)}" target="_blank"><b>{stock_entry.name}</b></a>',alert=True,indicator='green')
+
+def update_emi_amount(doc, method):
+    """
+	Generate the emi amount after deducting the down payment
+    """
+    down_payment = doc.down_payment_amount or 0
+    total = doc.total or 0
+    doc.emi_amount = total - down_payment
+
+def generate_emi_schedule(doc, method):
+    """
+    Generate EMI Duration table rows based on customer emi_start_date and number of installments
+    """
+
+    if not doc.customer:
+        frappe.throw("Please select a Customer.")
+
+    customer = frappe.get_doc("Customer", doc.customer)
+    emi_start_date = customer.get("emi_start_date")
+    if not emi_start_date:
+        frappe.throw("Customer does not have an EMI Start Date.")
+
+    no_of_installments = doc.get("no_of_installment")
+    if not no_of_installments:
+        frappe.throw("Please set No of Installments")
+
+    emi_amount = doc.get("emi_amount")  
+    doc.set("emi_duration", [])
+
+    installment_amount = flt(emi_amount) / int(no_of_installments)
+
+    for i in range(int(no_of_installments)):
+        installment_date = add_months(emi_start_date, i)
+        doc.append("emi_duration", {
+            "date": installment_date,
+            "amount": installment_amount
+        })
+

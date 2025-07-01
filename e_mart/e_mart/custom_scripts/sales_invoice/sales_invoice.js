@@ -1,3 +1,6 @@
+// Copyright (c) 2025, efeone and contributors
+// For license information, please see license.txt
+
 frappe.ui.form.on('Sales Invoice', {
     // Triggered when the form is loaded
     onload(frm) {
@@ -9,6 +12,24 @@ frappe.ui.form.on('Sales Invoice', {
     sales_type(frm) {
         set_customer_filter(frm);
     },
+    // Triggered when relevant fields change for EMI recalculation
+    down_payment_amount: function(frm) {
+        update_emi_amount(frm);
+        generate_emi_schedule(frm); 
+    },
+    total: function(frm) {
+        update_emi_amount(frm);
+        generate_emi_schedule(frm);
+    },
+    no_of_installment: function(frm) {
+        generate_emi_schedule(frm);
+    },
+    emi_amount: function(frm) {
+        generate_emi_schedule(frm);
+    },
+    customer: function(frm) {
+        generate_emi_schedule(frm);
+    },
 
     // Triggered before saving or submitting the form
     // If is_buyback is checked, subtract buyback_amount from outstanding_amount
@@ -17,6 +38,8 @@ frappe.ui.form.on('Sales Invoice', {
             let new_outstanding = (frm.doc.outstanding_amount || 0) - frm.doc.buyback_amount;
             frm.set_value('outstanding_amount', Math.max(new_outstanding, 0));
         }
+        update_emi_amount(frm);
+        generate_emi_schedule(frm);
     }
 });
 
@@ -83,4 +106,53 @@ function set_customer_filter(frm) {
             }
         });
     }
+}
+
+
+/**
+ * Calculates the EMI amount after deducting the down payment
+ * and updates the emi_amount field immediately.
+ */
+function update_emi_amount(frm) {
+    let down_payment = frm.doc.down_payment_amount || 0;
+    let total = frm.doc.total || 0;
+    let emi_amount = total - down_payment;
+
+    frm.set_value('emi_amount', emi_amount);
+}
+
+/**
+ * Generates EMI Duration child table rows dynamically
+ * based on customer emi_start_date, emi_amount, and no_of_installment.
+ */
+function generate_emi_schedule(frm) {
+    let customer = frm.doc.customer;
+    let no_of_installments = frm.doc.no_of_installment;
+    let emi_amount = frm.doc.emi_amount;
+
+    if (!customer || !no_of_installments || !emi_amount) {
+        return;
+    }
+
+    frappe.db.get_doc('Customer', customer)
+        .then(doc => {
+            let emi_start_date = doc.emi_start_date;
+            if (!emi_start_date) {
+                return; 
+            }
+
+            frm.clear_table('emi_duration');
+
+            let installment_amount = Number(emi_amount) / Number(no_of_installments);
+
+            for (let i = 0; i < Number(no_of_installments); i++) {
+                let installment_date = frappe.datetime.add_months(emi_start_date, i);
+                frm.add_child('emi_duration', {
+                    date: installment_date,
+                    amount: installment_amount
+                });
+            }
+
+            frm.refresh_field('emi_duration');
+        });
 }
