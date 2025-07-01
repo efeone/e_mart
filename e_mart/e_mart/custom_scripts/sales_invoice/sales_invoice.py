@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils import flt
 
 def validate_buyback_fields(doc, method=None):
     """Calculate row amount, total buyback amount, and adjust outstanding amount if is_buyback is checked."""
@@ -17,3 +18,32 @@ def validate_buyback_fields(doc, method=None):
     # 3. Subtract buyback from outstanding amount
     if doc.is_buyback and doc.buyback_amount:
         doc.outstanding_amount = max((doc.outstanding_amount or 0) - doc.buyback_amount, 0)
+
+def create_scrap_stock_entry(doc, method):
+    if not doc.buyback_items:
+        return
+
+    scrap_warehouse = frappe.db.get_single_value("E-mart Settings", "scrap_warehouse")
+    if not scrap_warehouse:
+        frappe.throw("Please set the Scrap Warehouse in E-mart Settings.")
+
+    stock_entry = frappe.new_doc("Stock Entry")
+    stock_entry.purpose = "Material Receipt"
+    stock_entry.stock_entry_type = "Material Receipt"
+    stock_entry.company = doc.company
+    stock_entry.to_warehouse = scrap_warehouse
+    stock_entry.sales_invoice_no = doc.name  # Optional
+
+    for row in doc.buyback_items:
+        if row.item and flt(row.qty) > 0:
+            stock_entry.append("items", {
+                "item_code": row.item,
+                "qty": row.qty,
+                "uom": "Nos",  # adjust as needed
+                "t_warehouse": scrap_warehouse,
+                "basic_rate": row.rate
+            })
+
+    stock_entry.insert()
+    stock_entry.submit()
+    frappe.msgprint(f' Scrap Stock Entry Created: <a href="{frappe.utils.get_url_to_form(stock_entry.doctype, stock_entry.name)}" target="_blank"><b>{stock_entry.name}</b></a>',alert=True,indicator='green')
