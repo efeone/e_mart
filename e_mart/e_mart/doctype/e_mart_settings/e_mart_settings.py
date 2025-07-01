@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class LavanyaEmartSettings(Document):
+class EmartSettings(Document):
 	pass

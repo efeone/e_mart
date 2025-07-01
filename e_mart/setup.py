@@ -13,6 +13,8 @@ def after_install():
     create_custom_fields(get_sales_invoice_item_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_serial_and_batch_entry_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_purchase_invoice_item_custom_fields(),ignore_validate=True, update=True)
+    create_custom_fields(get_item_custom_fields(),ignore_validate=True, update=True)
+    create_custom_fields(get_customer_custom_fields(),ignore_validate=True, update=True)
     create_custom_fields(get_stock_reconciliation_custom_fields(),ignore_validate=True, update=True)
 
     create_property_setters(get_property_setters())
@@ -28,6 +30,8 @@ def before_uninstall():
     delete_custom_fields(get_sales_invoice_item_custom_fields())
     delete_custom_fields(get_serial_and_batch_entry_custom_fields())
     delete_custom_fields(get_purchase_invoice_item_custom_fields())
+    delete_custom_fields(get_item_custom_fields())
+    delete_custom_fields(get_customer_custom_fields())
     delete_custom_fields(get_stock_reconciliation_custom_fields())
 
 
@@ -98,7 +102,7 @@ def get_purchase_invoice_custom_fields():
                 "label": "Purchase Schema",
                 "options": "Item-wise\nInvoice-level",
                 "insert_after": "supplier"
-			},
+            },
             {
                 "fieldname": "schema_discount_amount",
                 "fieldtype": "Currency",
@@ -120,6 +124,67 @@ def get_purchase_invoice_item_custom_fields():
                 "fieldtype": "Currency",
                 "label": "Schema Discount Amount",
                 "insert_after": "amount"
+            }
+        ]
+    }
+
+def get_item_custom_fields():
+    """
+    Custom fields that need to be added to the Item DocType
+    """
+    return {
+        "Item": [
+            {
+                "fieldname": "type_of_commission",
+                "fieldtype": "Select",
+                "label": "Type Of Commission",
+                "options": "Percentage\nFixed",
+                "insert_after": "stock_uom"
+            },
+            {
+                "fieldname": "commission_value",
+                "fieldtype": "Float",
+                "label": "Commission Value",
+                "insert_after": "type_of_commission"
+            },
+            {
+                "fieldname": "demo_required",
+                "fieldtype": "Check",
+                "label": "Demo Required",
+                "insert_after": "commission_value"
+            },
+            {
+                "fieldname": "periodic_service",
+                "fieldtype": "Check",
+                "label": "Periodic Service",
+                "insert_after": "demo_required"
+            },
+            {
+                "fieldname": "mrp",
+                "fieldtype": "Float",
+                "label": "MRP",
+                "insert_after": "periodic_service"
+            },
+        ]
+    }
+
+def get_customer_custom_fields():
+    """
+    Custom fields that need to be added to the Customer DocType
+    """
+    return {
+        "Customer": [
+            {
+                "fieldname": "is_provider",
+                "fieldtype": "Check",
+                "label": "Is Provider",
+                "insert_after": "customer_group"
+            },
+            {
+                "fieldname": "emi_start_date",
+                "fieldtype": "Date",
+                "label": "EMI Start Date",
+                "insert_after": "is_provider"
             }
         ]
     }
