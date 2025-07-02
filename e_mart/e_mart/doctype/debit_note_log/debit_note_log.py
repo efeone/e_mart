@@ -34,7 +34,7 @@ class DebitNoteLog(Document):
         if not supplier_account:
             frappe.throw(f"No account found for Supplier {self.supplier} in company {company}")
 
-        adjusted_account = frappe.db.get_single_value("Lavanya Emart Settings", "debit_note_adjusted_account")
+        adjusted_account = frappe.db.get_single_value("E-mart Settings", "debit_note_adjusted_account")
         if not adjusted_account:
             frappe.throw("Please set 'Debit Note Adjusted Account' in Lavanya Emart Settings.")
 
