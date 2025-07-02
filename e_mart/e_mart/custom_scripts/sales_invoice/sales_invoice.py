@@ -63,37 +63,37 @@ def create_scrap_stock_entry(doc, method):
 
 @frappe.whitelist()
 def create_finance_invoice(sales_invoice_name):
-    '''
-    Create Finance Invoice from Sales Invoice
-    '''
-    sales_invoice = frappe.get_doc("Sales Invoice", sales_invoice_name)
+	'''
+	Create Finance Invoice from Sales Invoice
+	'''
+	sales_invoice = frappe.get_doc("Sales Invoice", sales_invoice_name)
 
-    finance_invoice = frappe.new_doc("Finance Invoice")
-    finance_invoice.customer = sales_invoice.customer
-    finance_invoice.posting_date = frappe.utils.nowdate()
-    finance_invoice.total_amount = sales_invoice.total
-    finance_invoice.actual_customer = sales_invoice.actual_customer
-    finance_invoice.total_taxes_and_charges = sales_invoice.total_taxes_and_charges
+	finance_invoice = frappe.new_doc("Finance Invoice")
+	finance_invoice.customer = sales_invoice.customer
+	finance_invoice.posting_date = frappe.utils.nowdate()
+	finance_invoice.total_amount = sales_invoice.total
+	finance_invoice.actual_customer = sales_invoice.actual_customer
+	finance_invoice.total_taxes_and_charges = sales_invoice.total_taxes_and_charges
 
-    for item in sales_invoice.items:
-        finance_invoice.append("items", {
-            "actual_item": item.item_code,
-            "qty": item.qty,
-            "rate": item.rate,
-            "amount": item.amount
-        })
+	for item in sales_invoice.items:
+		finance_invoice.append("items", {
+			"actual_item": item.item_code,
+			"qty": item.qty,
+			"rate": item.rate,
+			"amount": item.amount
+		})
 
-    for tax in sales_invoice.taxes:
-        finance_invoice.append("sales_taxes_and_charges", {
-            "charge_type": tax.charge_type,
-            "account_head": tax.account_head,
-            "description": tax.description,
-            "rate": tax.rate,
-            "tax_amount": tax.tax_amount,
-            "total": tax.total,
-            "tax_amount_after_discount_amount": tax.tax_amount_after_discount_amount
-        })
+	for tax in sales_invoice.taxes:
+		finance_invoice.append("sales_taxes_and_charges", {
+			"charge_type": tax.charge_type,
+			"account_head": tax.account_head,
+			"description": tax.description,
+			"rate": tax.rate,
+			"tax_amount": tax.tax_amount,
+			"total": tax.total,
+			"tax_amount_after_discount_amount": tax.tax_amount_after_discount_amount
+		})
 
-    finance_invoice.save(ignore_permissions=True)
+	finance_invoice.save(ignore_permissions=True)
 
-    return finance_invoice.name
+	return finance_invoice.name
