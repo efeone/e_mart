@@ -35,8 +35,6 @@ def before_uninstall():
     delete_custom_fields(get_customer_custom_fields())
     delete_custom_fields(get_stock_reconciliation_custom_fields())
     delete_custom_fields(get_sales_invoice_custom_fields())
-    
-
 
 def delete_custom_fields(custom_fields: dict):
     """
@@ -112,7 +110,7 @@ def get_purchase_invoice_custom_fields():
                 "label": "Schema Discount Amount",
                 "insert_after": "items",
                 "read_only_depends_on": "eval:doc.purchase_schema == 'Item-wise'"
-			}
+            }
         ]
     }
 
@@ -361,6 +359,52 @@ def get_sales_invoice_custom_fields():
                 "fieldtype": "Currency",
                 "label": "Buyback Amount",
                 "insert_after": "buyback_items_column_break"
-            }
+            },
+             {
+                "fieldname": "emi_details_section",
+                "fieldtype": "Section Break",
+                "label": "EMI Details",
+                "insert_after": "total",
+                "depends_on": "eval:doc.sales_type == 'EMI'"
+
+            },
+            {
+                "fieldname": "down_payment_amount",
+                "fieldtype": "Currency",
+                "label": "Down Payment Amount",
+                "insert_after": "emi_details_section"
+            },
+            {
+                "fieldname": "emi_amount",
+                "fieldtype": "Currency",
+                "label": "EMI AMOUNT",
+                "insert_after": "down_payment_amount"
+            },
+            {
+                "fieldname": "installment_column_break",
+                "fieldtype": "Column Break",
+                "insert_after": "emi_amount"
+            },
+            {
+                "fieldname": "no_of_installment",
+                "fieldtype": "Int",
+                "label": "No Of Installment",
+                "insert_after": "installment_column_break"
+            },
+            {
+                "fieldname": "emi_duration_section",
+                "fieldtype": "Section Break",
+                "label": "EMI Duration",
+                "insert_after": "no_of_installment",
+                "depends_on": "eval:doc.sales_type == 'EMI'"
+
+            },
+            {
+                "fieldname": "emi_duration",
+                "fieldtype": "Table",
+                "label": "EMI Duration",
+                "options":"EMI Duration",
+                "insert_after": "emi_duration_section"
+            }  
         ]
     }
