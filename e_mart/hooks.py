@@ -151,16 +151,16 @@ doc_events = {
         "before_save": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.update_schema_discount_amount",
         "on_submit": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.on_submit"
     },
-	"Sales Invoice": {
+    "Sales Invoice": {
          "validate":[
-			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields",
-			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.generate_emi_schedule"
-			  ],
+              "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields",
+              "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.generate_emi_schedule"
+               ],
          "on_submit": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_scrap_stock_entry",
-		 "before_save": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
+         "before_save": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
 
     }
-		
+    
 }
 
 # Scheduled Tasks

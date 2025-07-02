@@ -134,25 +134,25 @@ function generate_emi_schedule(frm) {
         return;
     }
 
-    frappe.db.get_doc('Customer', customer)
-        .then(doc => {
-            let emi_start_date = doc.emi_start_date;
-            if (!emi_start_date) {
-                return; 
-            }
+    frappe.db.get_value('Customer', customer, 'emi_start_date')
+    .then(r => {
+        let emi_start_date = r.message.emi_start_date;
+        if (!emi_start_date) {
+            return;
+        }
 
-            frm.clear_table('emi_duration');
+        frm.clear_table('emi_duration');
 
-            let installment_amount = Number(emi_amount) / Number(no_of_installments);
+        let installment_amount = Number(emi_amount) / Number(no_of_installments);
 
-            for (let i = 0; i < Number(no_of_installments); i++) {
-                let installment_date = frappe.datetime.add_months(emi_start_date, i);
-                frm.add_child('emi_duration', {
-                    date: installment_date,
-                    amount: installment_amount
-                });
-            }
+        for (let i = 0; i < Number(no_of_installments); i++) {
+            let installment_date = frappe.datetime.add_months(emi_start_date, i);
+            frm.add_child('emi_duration', {
+                date: installment_date,
+                amount: installment_amount
+            });
+        }
 
-            frm.refresh_field('emi_duration');
-        });
+        frm.refresh_field('emi_duration');
+    });
 }
