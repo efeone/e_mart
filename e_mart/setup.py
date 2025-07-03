@@ -12,11 +12,12 @@ def after_install():
     create_custom_fields(get_sales_order_item_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_sales_invoice_item_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_serial_and_batch_entry_custom_fields(), ignore_validate=True, update=True)
-    create_custom_fields(get_purchase_invoice_item_custom_fields(),ignore_validate=True, update=True)
-    create_custom_fields(get_item_custom_fields(),ignore_validate=True, update=True)
-    create_custom_fields(get_customer_custom_fields(),ignore_validate=True, update=True)
-    create_custom_fields(get_stock_reconciliation_custom_fields(),ignore_validate=True, update=True)
+    create_custom_fields(get_purchase_invoice_item_custom_fields(), ignore_validate=True, update=True)
+    create_custom_fields(get_item_custom_fields(), ignore_validate=True, update=True)
+    create_custom_fields(get_customer_custom_fields(), ignore_validate=True, update=True)
+    create_custom_fields(get_stock_reconciliation_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_sales_invoice_custom_fields(), ignore_validate=True, update=True)
+    create_custom_fields(get_task_custom_fields(), ignore_validate=True, update=True)
 
     create_property_setters(get_property_setters())
 
@@ -35,6 +36,7 @@ def before_uninstall():
     delete_custom_fields(get_customer_custom_fields())
     delete_custom_fields(get_stock_reconciliation_custom_fields())
     delete_custom_fields(get_sales_invoice_custom_fields())
+    delete_custom_fields(get_task_custom_fields())
 
 def delete_custom_fields(custom_fields: dict):
     """
@@ -222,7 +224,14 @@ def get_sales_invoice_item_custom_fields():
                 "fieldtype": "Currency",
                 "label": "Profit for Commission",
                 "insert_after": "allow_commission"
-            }
+            },
+			{
+                "fieldname": "is_demo_reqd",
+                "fieldtype": "Check",
+                "label": "Demo Required",
+				"fetch_from": "item_code.demo_required",
+                "insert_after": "is_free_item"
+            },
         ]
     }
 
@@ -260,6 +269,52 @@ def get_stock_reconciliation_custom_fields():
         ]
     }
 
+def get_task_custom_fields():
+    """
+    Custom fields that need to be added to the Task DocType
+    """
+    return {
+        "Task": [
+			{
+                "fieldname": "section_break_l",
+                "fieldtype": "Section Break",
+                "label": "Invoice Details",
+                "insert_after": "parent_task",
+				"collapsible": 1
+            },
+            {
+                "fieldname": "invoice_reference",
+                "fieldtype": "Link",
+                "label": "Sales Invoice",
+				"options": "Sales Invoice",
+				"read_only": 1,
+                "insert_after": "section_break_l"
+            },
+			{
+                "fieldname": "invoice_date",
+                "fieldtype": "Date",
+                "label": "Invoice Date",
+				"read_only": 1,
+                "insert_after": "invoice_reference"
+            },
+			{
+                "fieldname": "column_break_task",
+                "fieldtype": "Column Break",
+                "label": " ",
+                "insert_after": "invoice_date",
+				"collapsible": 1
+            },
+			{
+                "fieldname": "customer",
+                "fieldtype": "Link",
+                "label": "Customer",
+				"options": "Customer",
+				"read_only": 1,
+                "insert_after": "column_break_task"
+            },
+        ]
+    }	
+
 def create_property_setters(property_setter_datas):
     '''
     Method to create custom property setters
@@ -295,6 +350,9 @@ def get_property_setters():
         }
     ]
 def get_sales_invoice_custom_fields():
+    """
+    Custom fields that need to be added to the Sales Invoice DocType
+    """
     return {
         "Sales Invoice": [
             {
