@@ -136,23 +136,23 @@ def get_item_custom_fields():
     return {
         "Item": [
             {
-                "fieldname": "type_of_commission",
+                "fieldname": "sales_commission",
                 "fieldtype": "Select",
-                "label": "Type Of Commission",
+                "label": "Sales Commission",
                 "options": "Percentage\nFixed",
-                "insert_after": "stock_uom"
+                "insert_after": "max_discount"
             },
             {
                 "fieldname": "commission_value",
                 "fieldtype": "Float",
                 "label": "Commission Value",
-                "insert_after": "type_of_commission"
+                "insert_after": "sales_commission"
             },
             {
                 "fieldname": "demo_required",
                 "fieldtype": "Check",
                 "label": "Demo Required",
-                "insert_after": "commission_value"
+                "insert_after": "allow_negative_stock"
             },
             {
                 "fieldname": "periodic_service",
@@ -164,7 +164,7 @@ def get_item_custom_fields():
                 "fieldname": "mrp",
                 "fieldtype": "Float",
                 "label": "MRP",
-                "insert_after": "periodic_service"
+                "insert_after": "stock_uom"
             },
         ]
     }
@@ -180,12 +180,6 @@ def get_customer_custom_fields():
                 "fieldtype": "Check",
                 "label": "Is Provider",
                 "insert_after": "customer_group"
-            },
-            {
-                "fieldname": "emi_start_date",
-                "fieldtype": "Date",
-                "label": "EMI Start Date",
-                "insert_after": "is_provider"
             }
         ]
     }
@@ -306,8 +300,8 @@ def get_sales_invoice_custom_fields():
                 "fieldname": "sales_type",
                 "fieldtype": "Select",
                 "label": "Sales Type",
-                "options": "\nCash\nCredit\nEMI",
-                "insert_after": "is_debit_note"
+                "options": "Cash\nCredit\nEMI",
+                "insert_after": "naming_series"
             },
             {
                 "fieldname": "actual_customer",
@@ -327,7 +321,7 @@ def get_sales_invoice_custom_fields():
                 "fieldname": "buyback_section",
                 "fieldtype": "Section Break",
                 "label": "",
-                "insert_after": "sales_type"
+                "insert_after": "total_taxes_and_charges"
             },
             {
                 "fieldname": "buyback_items",
@@ -360,7 +354,7 @@ def get_sales_invoice_custom_fields():
                 "label": "Buyback Amount",
                 "insert_after": "buyback_items_column_break"
             },
-             {
+            {
                 "fieldname": "emi_details_section",
                 "fieldtype": "Section Break",
                 "label": "EMI Details",
@@ -372,7 +366,8 @@ def get_sales_invoice_custom_fields():
                 "fieldname": "down_payment_amount",
                 "fieldtype": "Currency",
                 "label": "Down Payment Amount",
-                "insert_after": "emi_details_section"
+                "insert_after": "down_payment",
+				"depends_on": "eval:doc.down_payment"
             },
             {
                 "fieldname": "emi_amount",
@@ -380,10 +375,16 @@ def get_sales_invoice_custom_fields():
                 "label": "EMI AMOUNT",
                 "insert_after": "down_payment_amount"
             },
+			{
+                "fieldname": "emi_date",
+                "fieldtype": "Date",
+                "label": "EMI Start Date",
+                "insert_after": "emi_amount"
+            },
             {
                 "fieldname": "installment_column_break",
                 "fieldtype": "Column Break",
-                "insert_after": "emi_amount"
+                "insert_after": "emi_date"
             },
             {
                 "fieldname": "no_of_installment",
@@ -394,17 +395,36 @@ def get_sales_invoice_custom_fields():
             {
                 "fieldname": "emi_duration_section",
                 "fieldtype": "Section Break",
-                "label": "EMI Duration",
-                "insert_after": "no_of_installment",
+                "label": "EMI Schedule",
+                "insert_after": "closing_date",
                 "depends_on": "eval:doc.sales_type == 'EMI'"
 
             },
             {
                 "fieldname": "emi_duration",
                 "fieldtype": "Table",
-                "label": "EMI Duration",
+                "label": "EMI Schedule",
                 "options":"EMI Duration",
                 "insert_after": "emi_duration_section"
-            }  
+            },
+			{
+                "fieldname": "down_payment",
+                "fieldtype": "Check",
+                "label": "Is Down Payment",
+                "insert_after": "emi_details_section"
+            },
+			{
+                "fieldname": "emi_status",
+                "fieldtype": "Select",
+                "label": "EMI Status",
+				"options": "Unpaid\nPartly Paid\nPaid",
+                "insert_after": "no_of_installment"
+            },
+			{
+                "fieldname": "closing_date",
+                "fieldtype": "Date",
+                "label": "Closing Date",
+                "insert_after": "emi_status"
+            }        
         ]
     }
