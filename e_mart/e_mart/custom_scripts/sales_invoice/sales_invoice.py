@@ -71,34 +71,33 @@ def update_emi_amount(doc, method):
 
 def generate_emi_schedule(doc, method):
 	"""
-	Generate EMI Duration table rows based on customer emi_start_date and number of installments
+	Generate EMI Duration table rows based on:
+	- doc.emi_date (Sales Invoice EMI start date)
+	- no_of_installments
+	- emi_amount
 	"""
 	if doc.sales_type != "EMI":
 		return
 
-	if not doc.customer:
-		frappe.throw("Please select a Customer.")
+	if not doc.emi_date:
+		frappe.throw("Please set the EMI Start Date in Sales Invoice.")
 
-	customer = frappe.get_doc("Customer", doc.customer)
-	emi_start_date = customer.get("emi_start_date")
-	if not emi_start_date:
-		frappe.throw("Customer does not have an EMI Start Date.")
+	if not doc.no_of_installment:
+		frappe.throw("Please set No of Installments.")
 
-	no_of_installments = doc.get("no_of_installment")
-	if not no_of_installments:
-		frappe.throw("Please set No of Installments")
+	if not doc.emi_amount:
+		frappe.throw("Please set EMI Amount.")
 
-	emi_amount = doc.get("emi_amount")  
-	doc.set("emi_duration", [])
+	doc.set("emi_duration", [])  # Clear existing table
 
-	installment_amount = flt(emi_amount) / int(no_of_installments)
+	installment_amount = flt(doc.emi_amount) / int(doc.no_of_installment)
 
-	for i in range(int(no_of_installments)):
-		installment_date = add_months(emi_start_date, i)
+	for i in range(int(doc.no_of_installment)):
+		installment_date = add_months(doc.emi_date, i)
 		doc.append("emi_duration", {
 			"date": installment_date,
 			"amount": installment_amount
-		})
+		})		
 
 @frappe.whitelist()
 def create_finance_invoice(sales_invoice_name):
@@ -136,3 +135,4 @@ def create_finance_invoice(sales_invoice_name):
 	finance_invoice.save(ignore_permissions=True)
 
 	return finance_invoice.name
+

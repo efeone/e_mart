@@ -7,22 +7,22 @@ frappe.ui.form.on('Sales Invoice', {
 		set_customer_filter(frm);
 	},
 	refresh: function (frm) {
-		if (frm.doc.docstatus === 1 && frm.doc.sales_type == "EMI") {
-			frm.add_custom_button(__('Finance Invoice'), function () {
-				frappe.call({
-					method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_finance_invoice",
-					args: {
-						sales_invoice_name: frm.doc.name
-					},
-					callback: function (r) {
-						if (r.message) {
-							frappe.set_route('Form', 'Finance Invoice', r.message);
-						}
-					}
-				});
-			}, __('Create'));
-		}
-	},
+        if (!frm.is_new() && frm.doc.sales_type === "EMI") {
+            frm.add_custom_button(__('Create Finance Invoice'), function () {
+                frappe.call({
+                    method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_finance_invoice",
+                    args: {
+                        sales_invoice_name: frm.doc.name
+                    },
+                    callback: function (r) {
+                        if (r.message) {
+                            frappe.set_route('Form', 'Finance Invoice', r.message);
+                        }
+                    }
+                });
+            });
+        }
+    },
 	sales_type(frm) {
 		set_customer_filter(frm);
 	},
@@ -41,7 +41,7 @@ frappe.ui.form.on('Sales Invoice', {
 	emi_amount: function(frm) {
 		generate_emi_schedule(frm);
 	},
-	customer: function(frm) {
+	emi_date: function(frm) {
 		generate_emi_schedule(frm);
 	},
 
@@ -133,33 +133,33 @@ function update_emi_amount(frm) {
  * based on customer emi_start_date, emi_amount, and no_of_installment.
  */
 function generate_emi_schedule(frm) {
-	let customer = frm.doc.customer;
+	let emi_date = frm.doc.emi_date;
 	let no_of_installments = frm.doc.no_of_installment;
 	let emi_amount = frm.doc.emi_amount;
 
-	if (!customer || !no_of_installments || !emi_amount) {
+	if (!emi_date || !no_of_installments || !emi_amount) {
 		return;
 	}
 
-	frappe.db.get_value('Customer', customer, 'emi_start_date')
-	.then(r => {
-		let emi_start_date = r.message.emi_start_date;
-		if (!emi_start_date) {
-			return;
-		}
+	frm.clear_table('emi_duration');
 
-		frm.clear_table('emi_duration');
+	let installment_amount = Number(emi_amount) / Number(no_of_installments);
+	let last_date = null;
 
-		let installment_amount = Number(emi_amount) / Number(no_of_installments);
+	for (let i = 0; i < Number(no_of_installments); i++) {
+		let installment_date = frappe.datetime.add_months(emi_date, i);
+		last_date = installment_date; // Track last date
 
-		for (let i = 0; i < Number(no_of_installments); i++) {
-			let installment_date = frappe.datetime.add_months(emi_start_date, i);
-			frm.add_child('emi_duration', {
-				date: installment_date,
-				amount: installment_amount
-			});
-		}
+		frm.add_child('emi_duration', {
+			date: installment_date,
+			amount: installment_amount
+		});
+	}
 
-		frm.refresh_field('emi_duration');
-	});
+	frm.refresh_field('emi_duration');
+
+	// Set closing_date to last EMI date
+	if (last_date) {
+		frm.set_value('closing_date', last_date);
+	}
 }
