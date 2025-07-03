@@ -5,11 +5,15 @@ frappe.ui.form.on('Sales Invoice', {
 	onload(frm) {
 		frm.fields_dict.buyback_items.grid.wrapper.on('change', function () {
 			update_total_buyback_amount(frm);
+			update_rounded_total(frm);
 		});
 		set_customer_filter(frm);
 	},
 	refresh: function (frm) {
-		update_outstanding_amount(frm);
+		if (frm.doc.docstatus === 0) {
+			update_outstanding_amount(frm);
+			update_rounded_total(frm);
+		}
 		if (!frm.is_new() && frm.doc.sales_type === "EMI") {
 			frm.add_custom_button(__('Create Finance Invoice'), function () {
 				frappe.call({
@@ -36,19 +40,23 @@ frappe.ui.form.on('Sales Invoice', {
 	},
 	total: function(frm) {
 		update_outstanding_amount(frm);
+		update_rounded_total(frm);
 		update_emi_amount(frm);
 		generate_emi_schedule(frm);
 	},
 	total_taxes_and_charges(frm) {
 		update_outstanding_amount(frm);
+		update_rounded_total(frm);
 	},
 
 	buyback_amount(frm) {
 		update_outstanding_amount(frm);
+		update_rounded_total(frm);
 	},
 
 	is_buyback(frm) {
 		update_outstanding_amount(frm);
+		update_rounded_total(frm);
 	},
 	no_of_installment: function(frm) {
 		generate_emi_schedule(frm);
@@ -66,6 +74,7 @@ frappe.ui.form.on('Sales Invoice', {
 	calculate_totals(frm) {
 		setTimeout(() => {
 			update_outstanding_amount(frm);
+			update_rounded_total(frm);
 		}, 200);
 	}
 });
@@ -133,20 +142,37 @@ function update_total_buyback_amount(frm) {
 	});
 	frm.set_value('buyback_amount', total);
 	update_outstanding_amount(frm);
+	update_rounded_total(frm);
 }
 
 // Calculate Outstanding Amount
 function update_outstanding_amount(frm) {
+    if (frm.doc.docstatus === 0) { // only allow before submit
+        const total = flt(frm.doc.total || 0);
+        const taxes = flt(frm.doc.total_taxes_and_charges || 0);
+        const buyback = flt(frm.doc.buyback_amount || 0);
+
+        let outstanding = total + taxes;
+        if (frm.doc.is_buyback) {
+            outstanding -= buyback;
+        }
+        frm.set_value('outstanding_amount', Math.max(outstanding, 0));
+    }
+}
+
+// Calculate Rounded Total
+function update_rounded_total(frm) {
 	const total = flt(frm.doc.total || 0);
 	const taxes = flt(frm.doc.total_taxes_and_charges || 0);
 	const buyback = flt(frm.doc.buyback_amount || 0);
 
-	let outstanding = total + taxes;
+	let grand_total = total + taxes;
 	if (frm.doc.is_buyback) {
-		outstanding -= buyback;
+		grand_total -= buyback;
 	}
-	frm.set_value('outstanding_amount', Math.max(outstanding, 0));
+	frm.set_value('rounded_total', Math.round(grand_total));
 }
+
 
 // Filter customer field to show only providers when sales_type is EMI
 // If selected customer is not a provider, clear it
