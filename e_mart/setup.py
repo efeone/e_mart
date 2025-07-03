@@ -230,6 +230,7 @@ def get_sales_invoice_item_custom_fields():
                 "fieldtype": "Check",
                 "label": "Demo Required",
 				"fetch_from": "item_code.demo_required",
+				"read_only": 1,
                 "insert_after": "is_free_item"
             },
         ]
