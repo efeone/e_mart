@@ -6,47 +6,61 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "employee",
-  "month",
+  "start_date",
+  "end_date",
   "column_break_xlet",
-  "purchase_invoice",
-  "total_commission"
+  "log_month",
+  "section_break_fucd",
+  "monthly_commission_log",
+  "amended_from"
  ],
  "fields": [
-  {
-   "fieldname": "employee",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Employee",
-   "options": "Employee",
-   "reqd": 1
-  },
-  {
-   "fieldname": "month",
-   "fieldtype": "Link",
-   "label": "Month",
-   "options": "Months"
-  },
   {
    "fieldname": "column_break_xlet",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "purchase_invoice",
-   "fieldtype": "Link",
-   "label": "Purchase Invoice",
-   "options": "Purchase Invoice"
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
   },
   {
-   "fieldname": "total_commission",
-   "fieldtype": "Currency",
-   "label": "Total Commission"
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "log_month",
+   "fieldtype": "Select",
+   "label": "Log Month",
+   "options": "January\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "fieldname": "section_break_fucd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "monthly_commission_log",
+   "fieldtype": "Table",
+   "label": "Monthly Commission Log Detail",
+   "options": "Monthly Commission Logs"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Monthly Commission Log",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-06-20 10:47:38.251204",
+ "modified": "2025-07-03 13:25:05.359181",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "Monthly Commission Log",

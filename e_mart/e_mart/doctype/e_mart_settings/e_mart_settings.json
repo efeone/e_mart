@@ -9,7 +9,13 @@
   "section_break_ecmj",
   "debit_note_adjusted_account",
   "column_break_nwjy",
-  "scrap_warehouse"
+  "scrap_warehouse",
+  "demo_schedule_details_tab",
+  "subject",
+  "task_type",
+  "column_break_rutn",
+  "minimal_duration",
+  "escalation_duration"
  ],
  "fields": [
   {
@@ -37,13 +43,43 @@
    "fieldtype": "Link",
    "label": "Scrap Warehouse",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "demo_schedule_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Demo Schedule Details"
+  },
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Subject"
+  },
+  {
+   "fieldname": "task_type",
+   "fieldtype": "Link",
+   "label": "Task Type",
+   "options": "Task Type"
+  },
+  {
+   "fieldname": "column_break_rutn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "minimal_duration",
+   "fieldtype": "Int",
+   "label": "Minimal Duration"
+  },
+  {
+   "fieldname": "escalation_duration",
+   "fieldtype": "Int",
+   "label": "Escalation Duration"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-30 13:28:21.836463",
+ "modified": "2025-07-03 13:07:11.264626",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "E-mart Settings",
@@ -60,7 +96,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
