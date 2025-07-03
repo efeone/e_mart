@@ -236,8 +236,9 @@ def get_serial_and_batch_entry_custom_fields():
                 "fieldname": "purchase_category",
                 "fieldtype": "Select",
                 "label": "Purchase Category",
-                "options": "Normal\nSpecial",
+                "options": "\nNormal\nSpecial",
                 "insert_after": "batch_no",
+				"read_only": 1,
                 "allow_on_submit": 1
             }
         ]

@@ -142,7 +142,10 @@ before_uninstall = "e_mart.setup.before_uninstall"
 
 doc_events = {
     "Serial and Batch Bundle": {
-        "on_submit": "e_mart.e_mart.custom_scripts.serial_and_batch_bundle.serial_and_batch_bundle.set_purchase_category_from_voucher"
+        "on_submit": [
+			"e_mart.e_mart.custom_scripts.serial_and_batch_bundle.serial_and_batch_bundle.set_purchase_category_from_voucher",
+			"e_mart.e_mart.custom_scripts.serial_and_batch_bundle.serial_and_batch_bundle.set_purchase_category_on_creation"
+		]	
     },
     "Purchase Receipt": {
         "before_insert": "e_mart.e_mart.custom_scripts.purchase_order.purchase_order.fetch_purchase_category"
