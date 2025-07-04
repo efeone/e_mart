@@ -92,39 +92,38 @@ frappe.ui.form.on('Buyback Item', {
 });
 // Sales Invoice Items child table
 frappe.ui.form.on('Sales Invoice Item', {
-    qty(frm) {
-        frm.trigger("calculate_totals");
-    },
-    rate(frm) {
-        frm.trigger("calculate_totals");
-    },
-    amount(frm) {
-        frm.trigger("calculate_totals");
-    },
-    items_add(frm) {
-        frm.trigger("calculate_totals");
-    },
-    items_remove(frm) {
-        frm.trigger("calculate_totals");
-    }
+	qty(frm) {
+		frm.trigger("calculate_totals");
+	},
+	rate(frm) {
+		frm.trigger("calculate_totals");
+	},
+	amount(frm) {
+		frm.trigger("calculate_totals");
+	},
+	items_add(frm) {
+		frm.trigger("calculate_totals");
+	},
+	items_remove(frm) {
+		frm.trigger("calculate_totals");
+	}
 });
 
 // Taxes child table
 frappe.ui.form.on('Sales Taxes and Charges', {
-    tax_amount(frm) {
-        frm.trigger("calculate_totals");
-    },
-    rate(frm) {
-        frm.trigger("calculate_totals");
-    },
-    taxes_add(frm) {
-        frm.trigger("calculate_totals");
-    },
-    taxes_remove(frm) {
-        frm.trigger("calculate_totals");
-    }
+	tax_amount(frm) {
+		frm.trigger("calculate_totals");
+	},
+	rate(frm) {
+		frm.trigger("calculate_totals");
+	},
+	taxes_add(frm) {
+		frm.trigger("calculate_totals");
+	},
+	taxes_remove(frm) {
+		frm.trigger("calculate_totals");
+	}
 });
-
 
 // Calculate Buyback Row Amount
 function calculate_row_amount(frm, cdt, cdn) {
@@ -147,17 +146,17 @@ function update_total_buyback_amount(frm) {
 
 // Calculate Outstanding Amount
 function update_outstanding_amount(frm) {
-    if (frm.doc.docstatus === 0) { // only allow before submit
-        const total = flt(frm.doc.total || 0);
-        const taxes = flt(frm.doc.total_taxes_and_charges || 0);
-        const buyback = flt(frm.doc.buyback_amount || 0);
+	if (frm.doc.docstatus === 0) { 
+		const total = flt(frm.doc.total || 0);
+		const taxes = flt(frm.doc.total_taxes_and_charges || 0);
+		const buyback = flt(frm.doc.buyback_amount || 0);
 
-        let outstanding = total + taxes;
-        if (frm.doc.is_buyback) {
-            outstanding -= buyback;
-        }
-        frm.set_value('outstanding_amount', Math.max(outstanding, 0));
-    }
+		let outstanding = total + taxes;
+		if (frm.doc.is_buyback) {
+			outstanding -= buyback;
+		}
+		frm.set_value('outstanding_amount', Math.max(outstanding, 0));
+	}
 }
 
 // Calculate Rounded Total
@@ -172,7 +171,6 @@ function update_rounded_total(frm) {
 	}
 	frm.set_value('rounded_total', Math.round(grand_total));
 }
-
 
 // Filter customer field to show only providers when sales_type is EMI
 // If selected customer is not a provider, clear it
