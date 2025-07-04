@@ -161,8 +161,10 @@ doc_events = {
                ],
          "on_submit": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_scrap_stock_entry",
          "before_save": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
-
-    }
+    },
+	"Payment Entry" : {
+		"on_submit" : "e_mart.e_mart.custom_scripts.payment_entry.payment_entry.update_down_payment_status"
+	}
     
 }
 

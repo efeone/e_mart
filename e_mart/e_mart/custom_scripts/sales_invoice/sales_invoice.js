@@ -7,22 +7,30 @@ frappe.ui.form.on('Sales Invoice', {
 		set_customer_filter(frm);
 	},
 	refresh: function (frm) {
-        if (!frm.is_new() && frm.doc.sales_type === "EMI") {
-            frm.add_custom_button(__('Create Finance Invoice'), function () {
-                frappe.call({
-                    method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_finance_invoice",
-                    args: {
-                        sales_invoice_name: frm.doc.name
-                    },
-                    callback: function (r) {
-                        if (r.message) {
-                            frappe.set_route('Form', 'Finance Invoice', r.message);
-                        }
-                    }
-                });
-            });
-        }
-    },
+		if (!frm.is_new() && frm.doc.sales_type === "EMI") {
+			frm.add_custom_button(__('Create Finance Invoice'), function () {
+				frappe.call({
+					method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_finance_invoice",
+					args: {
+						sales_invoice_name: frm.doc.name
+					},
+					callback: function (r) {
+						if (r.message) {
+							frappe.set_route('Form', 'Finance Invoice', r.message);
+						}
+					}
+				});
+			});
+		if (frm.doc.docstatus === 1 && frm.doc.down_payment && frm.doc.down_payment_amount) {
+			frm.add_custom_button(__('Down Payment'), function() {
+				frappe.model.open_mapped_doc({
+					method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.make_down_payment_entry",
+					source_name: frm.doc.name  
+				});
+			}, __('Create'));
+		}
+	}
+},
 	sales_type(frm) {
 		set_customer_filter(frm);
 	},
