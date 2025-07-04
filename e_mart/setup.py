@@ -18,6 +18,7 @@ def after_install():
     create_custom_fields(get_stock_reconciliation_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_sales_invoice_custom_fields(), ignore_validate=True, update=True)
     create_custom_fields(get_task_custom_fields(), ignore_validate=True, update=True)
+    create_custom_fields(get_mode_of_payment_custom_fields(), ignore_validate=True, update=True)
 
     create_property_setters(get_property_setters())
 
@@ -37,6 +38,7 @@ def before_uninstall():
     delete_custom_fields(get_stock_reconciliation_custom_fields())
     delete_custom_fields(get_sales_invoice_custom_fields())
     delete_custom_fields(get_task_custom_fields())
+    delete_custom_fields(get_mode_of_payment_custom_fields())
 
 def delete_custom_fields(custom_fields: dict):
     """
@@ -270,6 +272,21 @@ def get_stock_reconciliation_custom_fields():
         ]
     }
 
+def get_mode_of_payment_custom_fields():
+    """
+    Custom fields that need to be added to the Mode Of Payment DocType
+    """
+    return {
+        "Mode of Payment": [
+            {
+                "fieldname": "is_finance",
+                "fieldtype": "Check",
+                "label": "Is Finance",
+                "insert_after": "enabled"
+            }
+        ]
+    }	
+
 def get_task_custom_fields():
     """
     Custom fields that need to be added to the Task DocType
@@ -364,18 +381,17 @@ def get_sales_invoice_custom_fields():
                 "insert_after": "naming_series"
             },
             {
-                "fieldname": "actual_customer",
+                "fieldname": "mode_of_payment",
                 "fieldtype": "Link",
-                "label": "Actual Customer",
-                "options": "Customer",
-                "depends_on": "eval:doc.sales_type == 'EMI' && doc.customer",
+                "label": "Mode Of Payment",
+                "options": "Mode of Payment",
                 "insert_after": "customer"
             },
             {
                 "fieldname": "is_buyback",
                 "fieldtype": "Check",
                 "label": "Is Buyback",
-                "insert_after": "actual_customer"
+                "insert_after": "mode_of_payment"
             },
             {
                 "fieldname": "buyback_section",
@@ -416,9 +432,9 @@ def get_sales_invoice_custom_fields():
             },
             {
                 "fieldname": "emi_details_section",
-                "fieldtype": "Section Break",
+                "fieldtype": "Tab Break",
                 "label": "EMI Details",
-                "insert_after": "total",
+                "insert_after": "to_date",
                 "depends_on": "eval:doc.sales_type == 'EMI'"
 
             },
@@ -481,10 +497,9 @@ def get_sales_invoice_custom_fields():
                 "insert_after": "emi_details_section"
             },
 			{
-                "fieldname": "emi_status",
-                "fieldtype": "Select",
-                "label": "EMI Status",
-				"options": "Unpaid\nPartly Paid\nPaid",
+                "fieldname": "down_payment_paid",
+                "fieldtype": "Check",
+                "label": "Down Payment Paid",
                 "insert_after": "no_of_installment"
             },
 			{

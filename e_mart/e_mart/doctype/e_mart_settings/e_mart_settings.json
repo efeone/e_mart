@@ -10,6 +10,8 @@
   "debit_note_adjusted_account",
   "column_break_nwjy",
   "scrap_warehouse",
+  "column_break_bgwq",
+  "buyback_posting_account",
   "demo_schedule_details_tab",
   "subject",
   "task_type",
@@ -73,13 +75,23 @@
    "fieldname": "escalation_duration",
    "fieldtype": "Int",
    "label": "Escalation Duration"
+  },
+  {
+   "fieldname": "column_break_bgwq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "buyback_posting_account",
+   "fieldtype": "Link",
+   "label": "Buyback Posting Account",
+   "options": "Account"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-03 13:07:11.264626",
+ "modified": "2025-07-04 10:39:11.057244",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "E-mart Settings",
