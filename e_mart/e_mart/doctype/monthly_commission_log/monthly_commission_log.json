@@ -6,19 +6,16 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "employee",
+  "log_month",
+  "column_break_wwtu",
   "start_date",
   "end_date",
-  "column_break_xlet",
-  "log_month",
   "section_break_fucd",
   "monthly_commission_log",
   "amended_from"
  ],
  "fields": [
-  {
-   "fieldname": "column_break_xlet",
-   "fieldtype": "Column Break"
-  },
   {
    "fieldname": "start_date",
    "fieldtype": "Date",
@@ -54,13 +51,23 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "column_break_wwtu",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-03 13:25:05.359181",
+ "modified": "2025-07-04 12:23:09.522388",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "Monthly Commission Log",
@@ -80,6 +87,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
