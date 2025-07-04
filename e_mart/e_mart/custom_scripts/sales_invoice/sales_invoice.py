@@ -24,9 +24,17 @@ def validate_buyback_fields(doc, method=None):
 	# 2. Set total buyback amount
 	doc.buyback_amount = total
 
-	# 3. Subtract buyback from outstanding amount
+	# 3.Calculate outstanding amount
+	grand_total = (doc.total or 0) + (doc.total_taxes_and_charges or 0)
 	if doc.is_buyback and doc.buyback_amount:
-		doc.outstanding_amount = max((doc.outstanding_amount or 0) - doc.buyback_amount, 0)
+		grand_total -= doc.buyback_amount
+	doc.outstanding_amount = round(grand_total)
+
+	# 4. Set rounded_total
+	grand_total = (doc.total or 0) + (doc.total_taxes_and_charges or 0)
+	if doc.is_buyback and doc.buyback_amount:
+		grand_total -= doc.buyback_amount
+	doc.rounded_total = round(grand_total)
 
 def create_scrap_stock_entry(doc, method):
 	"""

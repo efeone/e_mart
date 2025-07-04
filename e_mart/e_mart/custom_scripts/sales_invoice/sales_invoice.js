@@ -3,10 +3,17 @@
 
 frappe.ui.form.on('Sales Invoice', {
 	onload(frm) {
-		update_total_buyback_amount(frm);
+		frm.fields_dict.buyback_items.grid.wrapper.on('change', function () {
+			update_total_buyback_amount(frm);
+			update_rounded_total(frm);
+		});
 		set_customer_filter(frm);
 	},
 	refresh: function (frm) {
+		if (frm.doc.docstatus === 0) {
+			update_outstanding_amount(frm);
+			update_rounded_total(frm);
+		}
 		if (!frm.is_new() && frm.doc.sales_type === "EMI") {
 			frm.add_custom_button(__('Create Finance Invoice'), function () {
 				frappe.call({
@@ -40,8 +47,24 @@ frappe.ui.form.on('Sales Invoice', {
 		generate_emi_schedule(frm); 
 	},
 	total: function(frm) {
+		update_outstanding_amount(frm);
+		update_rounded_total(frm);
 		update_emi_amount(frm);
 		generate_emi_schedule(frm);
+	},
+	total_taxes_and_charges(frm) {
+		update_outstanding_amount(frm);
+		update_rounded_total(frm);
+	},
+
+	buyback_amount(frm) {
+		update_outstanding_amount(frm);
+		update_rounded_total(frm);
+	},
+
+	is_buyback(frm) {
+		update_outstanding_amount(frm);
+		update_rounded_total(frm);
 	},
 	no_of_installment: function(frm) {
 		generate_emi_schedule(frm);
@@ -52,20 +75,18 @@ frappe.ui.form.on('Sales Invoice', {
 	emi_date: function(frm) {
 		generate_emi_schedule(frm);
 	},
-
-	// Triggered before saving or submitting the form
-
-	// If is_buyback is checked, subtract buyback_amount from outstanding_amount
 	validate(frm) {
-		if (frm.doc.is_buyback && frm.doc.buyback_amount) {
-			let new_outstanding = (frm.doc.outstanding_amount || 0) - frm.doc.buyback_amount;
-			frm.set_value('outstanding_amount', Math.max(new_outstanding, 0));
-		}
 		update_emi_amount(frm);
 		generate_emi_schedule(frm);
+	},
+	calculate_totals(frm) {
+		setTimeout(() => {
+			update_outstanding_amount(frm);
+			update_rounded_total(frm);
+		}, 200);
 	}
 });
-
+// Buyback Item child table
 frappe.ui.form.on('Buyback Item', {
 	qty(frm, cdt, cdn) {
 		calculate_row_amount(frm, cdt, cdn);
@@ -73,31 +94,90 @@ frappe.ui.form.on('Buyback Item', {
 	rate(frm, cdt, cdn) {
 		calculate_row_amount(frm, cdt, cdn);
 	},
-	buyback_items_add(frm) {
-		update_total_buyback_amount(frm);
-	},
 	buyback_items_remove(frm) {
 		update_total_buyback_amount(frm);
 	}
 });
+// Sales Invoice Items child table
+frappe.ui.form.on('Sales Invoice Item', {
+	qty(frm) {
+		frm.trigger("calculate_totals");
+	},
+	rate(frm) {
+		frm.trigger("calculate_totals");
+	},
+	amount(frm) {
+		frm.trigger("calculate_totals");
+	},
+	items_add(frm) {
+		frm.trigger("calculate_totals");
+	},
+	items_remove(frm) {
+		frm.trigger("calculate_totals");
+	}
+});
 
-// Calculate the amount for the Buyback Item row
-// and update the total buyback amount
+// Taxes child table
+frappe.ui.form.on('Sales Taxes and Charges', {
+	tax_amount(frm) {
+		frm.trigger("calculate_totals");
+	},
+	rate(frm) {
+		frm.trigger("calculate_totals");
+	},
+	taxes_add(frm) {
+		frm.trigger("calculate_totals");
+	},
+	taxes_remove(frm) {
+		frm.trigger("calculate_totals");
+	}
+});
+
+// Calculate Buyback Row Amount
 function calculate_row_amount(frm, cdt, cdn) {
 	let row = locals[cdt][cdn];
-	row.amount = (row.qty || 0) * (row.rate || 0);
+	row.amount = (flt(row.qty) || 0) * (flt(row.rate) || 0);
 	frm.fields_dict.buyback_items.grid.refresh();
 	update_total_buyback_amount(frm);
 }
 
-// Sum all row amounts from buyback_items
-// and set the parent field buyback_amount
+// Sum all row amounts from buyback_items_amount
 function update_total_buyback_amount(frm) {
 	let total = 0;
 	(frm.doc.buyback_items || []).forEach(row => {
-		total += row.amount || 0;
+		total += flt(row.amount || 0);
 	});
 	frm.set_value('buyback_amount', total);
+	update_outstanding_amount(frm);
+	update_rounded_total(frm);
+}
+
+// Calculate Outstanding Amount
+function update_outstanding_amount(frm) {
+	if (frm.doc.docstatus === 0) { 
+		const total = flt(frm.doc.total || 0);
+		const taxes = flt(frm.doc.total_taxes_and_charges || 0);
+		const buyback = flt(frm.doc.buyback_amount || 0);
+
+		let outstanding = total + taxes;
+		if (frm.doc.is_buyback) {
+			outstanding -= buyback;
+		}
+		frm.set_value('outstanding_amount', Math.max(outstanding, 0));
+	}
+}
+
+// Calculate Rounded Total
+function update_rounded_total(frm) {
+	const total = flt(frm.doc.total || 0);
+	const taxes = flt(frm.doc.total_taxes_and_charges || 0);
+	const buyback = flt(frm.doc.buyback_amount || 0);
+
+	let grand_total = total + taxes;
+	if (frm.doc.is_buyback) {
+		grand_total -= buyback;
+	}
+	frm.set_value('rounded_total', Math.round(grand_total));
 }
 
 // Filter customer field to show only providers when sales_type is EMI
