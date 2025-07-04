@@ -141,31 +141,31 @@ before_uninstall = "e_mart.setup.before_uninstall"
 # Hook on document methods and events
 
 doc_events = {
-    "Serial and Batch Bundle": {
-        "on_submit": [
+	"Serial and Batch Bundle": {
+		"on_submit": [
 			"e_mart.e_mart.custom_scripts.serial_and_batch_bundle.serial_and_batch_bundle.set_purchase_category_from_voucher",
 			"e_mart.e_mart.custom_scripts.serial_and_batch_bundle.serial_and_batch_bundle.set_purchase_category_on_creation"
 		]	
-    },
-    "Purchase Receipt": {
-        "before_insert": "e_mart.e_mart.custom_scripts.purchase_order.purchase_order.fetch_purchase_category"
-    },
-    "Purchase Invoice": {
-        "before_save": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.update_schema_discount_amount",
-        "on_submit": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.on_submit"
-    },
-    "Sales Invoice": {
-         "validate":[
-              "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields",
-              "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.generate_emi_schedule"
-               ],
-         "on_submit": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_scrap_stock_entry",
-         "before_save": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
-    },
+	},
+	"Purchase Receipt": {
+		"before_insert": "e_mart.e_mart.custom_scripts.purchase_order.purchase_order.fetch_purchase_category"
+	},
+	"Purchase Invoice": {
+		"before_save": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.update_schema_discount_amount",
+		"on_submit": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.on_submit"
+	},
+	"Sales Invoice": {
+		 "validate":[
+			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields",
+			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.generate_emi_schedule"
+			   ],
+		 "on_submit": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_scrap_stock_entry",
+		 "before_save": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
+	},
 	"Payment Entry" : {
 		"on_submit" : "e_mart.e_mart.custom_scripts.payment_entry.payment_entry.update_down_payment_status"
 	}
-    
+	
 }
 
 # Scheduled Tasks
