@@ -3,7 +3,10 @@
 
 frappe.ui.form.on('Sales Invoice', {
 	onload(frm) {
-		update_total_buyback_amount(frm);
+		frm.fields_dict.buyback_items.grid.wrapper.on('change', function () {
+			update_total_buyback_amount(frm);
+			update_rounded_total(frm);
+		});
 		set_finance_filter(frm);
 	},
 	refresh: function (frm) {
@@ -36,7 +39,7 @@ frappe.ui.form.on('Sales Invoice', {
 	}
 },
 	sales_type(frm) {
-		set_customer_filter(frm);
+		set_finance_filter(frm);
 	},
 	// Triggered when relevant fields change for EMI recalculation
 	down_payment_amount: function(frm) {
