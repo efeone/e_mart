@@ -3,11 +3,8 @@
 
 frappe.ui.form.on('Sales Invoice', {
 	onload(frm) {
-		frm.fields_dict.buyback_items.grid.wrapper.on('change', function () {
-			update_total_buyback_amount(frm);
-			update_rounded_total(frm);
-		});
-		set_customer_filter(frm);
+		update_total_buyback_amount(frm);
+		set_finance_filter(frm);
 	},
 	refresh: function (frm) {
 		if (frm.doc.docstatus === 0) {
@@ -182,12 +179,12 @@ function update_rounded_total(frm) {
 
 // Filter customer field to show only providers when sales_type is EMI
 // If selected customer is not a provider, clear it
-function set_customer_filter(frm) {
-	frm.set_query("customer", () => {
+function set_finance_filter(frm) {
+	frm.set_query("mode_of_payment", () => {
 		if (frm.doc.sales_type === "EMI") {
 			return {
 				filters: {
-					is_provider: 1
+					is_finance: 1
 				}
 			};
 		} else {
