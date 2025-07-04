@@ -500,7 +500,9 @@ def get_sales_invoice_custom_fields():
 				"fieldname": "down_payment_paid",
 				"fieldtype": "Check",
 				"label": "Down Payment Paid",
-				"insert_after": "no_of_installment"
+				"insert_after": "no_of_installment",
+				"allow_on_submit" : 1 ,
+				"read_only": 1,
 			},
 			{
 				"fieldname": "closing_date",

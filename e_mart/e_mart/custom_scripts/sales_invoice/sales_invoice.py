@@ -1,5 +1,7 @@
 import frappe
 from frappe.utils import flt,add_months
+from frappe.model.mapper import get_mapped_doc
+
 
 def validate_buyback_fields(doc, method=None):
 
@@ -86,6 +88,8 @@ def generate_emi_schedule(doc, method):
 	"""
 	if doc.sales_type != "EMI":
 		return
+	if doc.is_buyback: 
+		return
 
 	if not doc.emi_date:
 		frappe.throw("Please set the EMI Start Date in Sales Invoice.")
@@ -144,3 +148,58 @@ def create_finance_invoice(sales_invoice_name):
 
 	return finance_invoice.name
 
+#
+@frappe.whitelist()
+
+def make_down_payment_entry(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		"""
+		Create a Payment Entry from a Sales Invoice for down payment.
+		Replaces total payment with down payment amount and map hte details.
+		
+		"""
+		down_payment = source.down_payment_amount
+		target.payment_type = "Receive"
+		target.party_type = "Customer"
+		target.paid_amount = down_payment
+		target.received_amount = down_payment
+
+		paid_from = frappe.get_value("Company", source.company, "default_receivable_account")
+		paid_to = frappe.get_value("Company", source.company, "default_bank_account")
+
+		target.paid_from = paid_from
+		target.paid_to = paid_to
+		target.posting_date = frappe.utils.nowdate()
+
+		paid_from_currency = frappe.get_value("Account", paid_from, "account_currency")
+		paid_to_currency = frappe.get_value("Account", paid_to, "account_currency")
+
+		target.paid_from_account_currency = paid_from_currency
+		target.paid_to_account_currency = paid_to_currency
+
+		target.append("references", {
+			"reference_doctype": "Sales Invoice",
+			"reference_name": source.name,
+			"total_amount": source.rounded_total,
+			"outstanding_amount": source.outstanding_amount,
+			"allocated_amount": down_payment
+		})
+
+	doc = get_mapped_doc(
+		"Sales Invoice",
+		source_name,
+		{
+			"Sales Invoice": {
+				"doctype": "Payment Entry",
+				"field_map": {
+					"customer": "party",
+					"customer_name": "party_name",
+					"company": "company"
+				}
+			}
+		},
+		target_doc,
+		set_missing_values
+	)
+	return doc
+	
