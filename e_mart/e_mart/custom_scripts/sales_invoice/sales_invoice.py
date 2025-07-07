@@ -1,10 +1,9 @@
 import frappe
 from frappe.utils import flt,add_months
 from frappe.model.mapper import get_mapped_doc
-
+from frappe.utils import nowdate
 
 def validate_buyback_fields(doc, method=None):
-
 	"""
 	Triggered on validation of Sales Invoice.
 
@@ -203,3 +202,54 @@ def make_down_payment_entry(source_name, target_doc=None):
 	)
 	return doc
 	
+def create_buyback_journal_entry(doc, method):
+    '''
+    Create Buyback Journal entry for Buyback amount from Sales invoice.
+    '''
+    if not doc.is_buyback or not doc.buyback_amount or doc.buyback_amount <= 0:
+        return
+
+    customer_account = doc.debit_to
+    if not customer_account:
+        frappe.throw(f"Customer receivable account (debit_to) not found in Sales Invoice {doc.name}")
+
+    company = doc.company or frappe.db.get_value("Sales Invoice", doc.name, "company")
+    if not company:
+        frappe.throw(f"Company not found for Sales Invoice {doc.name}")
+
+    buyback_account = frappe.db.get_single_value("E-mart Settings", "buyback_posting_account")
+    if not buyback_account:
+        frappe.throw("Please set 'Buyback Posting Account' in E-mart Settings.")
+
+    # Create Journal Entry
+    journal_entry = frappe.new_doc("Journal Entry")
+    journal_entry.voucher_type = "Credit Note"
+    journal_entry.posting_date = nowdate()
+    journal_entry.company = company
+    journal_entry.remark = f"Buyback adjustment for Sales Invoice {doc.name}"
+
+    # Debit Customer (receivable)
+    journal_entry.append("accounts", {
+        "account": customer_account,
+        "party_type": "Customer",
+        "party": doc.customer,
+        "debit_in_account_currency": doc.buyback_amount,
+        "reference_type": "Sales Invoice",
+        "reference_name": doc.name
+    })
+
+    # Credit Buyback Posting Account
+    journal_entry.append("accounts", {
+        "account": buyback_account,
+        "credit_in_account_currency": doc.buyback_amount
+    })
+
+    journal_entry.insert(ignore_permissions=True)
+    journal_entry.submit()
+
+    # Optional: Save Journal Entry reference if field exists
+    if frappe.get_meta(doc.doctype).has_field("buyback_journal_entry"):
+        doc.db_set("buyback_journal_entry", journal_entry.name)
+
+    frappe.msgprint(
+        f'Buyback Journal Entry Created: <a href="{frappe.utils.get_url_to_form("Journal Entry", journal_entry.name)}" target="_blank"><b>{journal_entry.name}</b></a>',alert=True,indicator='green')
