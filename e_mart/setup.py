@@ -170,6 +170,12 @@ def get_item_custom_fields():
 				"label": "MRP",
 				"insert_after": "stock_uom"
 			},
+			{
+				"fieldname": "sales_expense_contribution",
+				"fieldtype": "Data",
+				"label": "Sales Expense Contribution",
+				"insert_after": "commission_value"
+			},
 		]
 	}
 
@@ -235,6 +241,12 @@ def get_sales_invoice_item_custom_fields():
 				"read_only": 1,
 				"insert_after": "is_free_item"
 			},
+			{
+				"fieldname": "sales_expense_contribution",
+				"fieldtype": "Data",
+				"label": "Sales Expense Contribution",
+				"insert_after": "is_demo_reqd"
+			}
 		]
 	}
 
@@ -509,6 +521,37 @@ def get_sales_invoice_custom_fields():
 				"fieldtype": "Date",
 				"label": "Closing Date",
 				"insert_after": "emi_status"
-			}        
+			},
+			{
+				"fieldname": "sales_expense_tab",
+				"fieldtype": "Tab Break",
+				"label": "Sales Expenses",
+				"insert_after": "timesheets"
+			},
+			{
+				"fieldname": "sales_expenses",
+				"fieldtype": "Table",
+				"label": "Sales Expenses",
+				"options":"Sales Expenses",
+				"insert_after": "sales_expense_tab"
+			},
+			{
+				"fieldname": "sales_expense_sec",
+				"fieldtype": "Section Break",
+				"label": " ",
+				"insert_after": "sales_expenses"
+			},
+			{
+				"fieldname": "sales_expense_col",
+				"fieldtype": "Column Break",
+				"insert_after": "sales_expense_sec"
+			},
+			{
+				"fieldname": "total_expense",
+				"fieldtype": "Currency",
+				"label": "Total Expense",
+				"read_only": 1,
+				"insert_after": "sales_expense_col"
+			}          
 		]
 	}

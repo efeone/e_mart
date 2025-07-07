@@ -159,10 +159,7 @@ doc_events = {
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields",
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.generate_emi_schedule"
 		],
-		"on_submit":[
-			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_scrap_stock_entry",
-			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_buyback_journal_entry"
-		],
+		"on_submit": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.on_submit",
 		"before_save": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
 	},
 	"Payment Entry" : {

@@ -1,7 +1,13 @@
 import frappe
-from frappe.utils import flt,add_months
+from frappe.utils import flt,add_months,nowdate,get_first_day,get_last_day,add_days
 from frappe.model.mapper import get_mapped_doc
-from frappe.utils import nowdate
+from datetime import datetime
+
+def on_submit(doc, method=None):
+	create_scrap_stock_entry(doc, method)
+	create_buyback_journal_entry(doc, method)
+	create_demo_tasks_on_submit(doc, method)
+	update_monthly_commission_log(doc, method)
 
 def validate_buyback_fields(doc, method=None):
 	"""
@@ -253,3 +259,100 @@ def create_buyback_journal_entry(doc, method):
 
     frappe.msgprint(
         f'Buyback Journal Entry Created: <a href="{frappe.utils.get_url_to_form("Journal Entry", journal_entry.name)}" target="_blank"><b>{journal_entry.name}</b></a>',alert=True,indicator='green')
+
+def create_demo_tasks_on_submit(doc, method=None):
+    """
+    Create a Task for each Sales Invoice Item where is_demo_reqd is checked.
+    Subject, Task Type, Minimal Duration, Escalation Duration come from E-mart Settings.
+    Maps invoice_date, invoice_reference, customer, exp_start_date, and end_date into Task.
+    """
+
+    settings = frappe.get_single("E-mart Settings")
+    task_subject_template = settings.subject or "Demo Required - {item_name} [{invoice_name}]"
+    task_type = settings.task_type or "Demo"
+    minimal_duration = settings.minimal_duration or 0
+    escalation_duration = settings.escalation_duration or 0
+
+    for item in doc.items:
+        if item.get("is_demo_reqd"):
+            subject = task_subject_template.format(
+                item_name=item.item_name,
+                invoice_name=doc.name
+            )
+
+            exp_start_date = add_days(doc.posting_date, minimal_duration)
+            end_date = add_days(doc.posting_date, escalation_duration)
+
+            task = frappe.new_doc("Task")
+            task.subject = subject
+            task.type = task_type
+            task.status = "Open"
+            task.reference_type = "Sales Invoice"
+            task.reference_name = doc.name
+            task.description = (
+                f"Demo required for Item: {item.item_name} ({item.item_code})\n"
+                f"Qty: {item.qty}\n"
+                f"Customer: {doc.customer}\n"
+            )
+			
+            task.invoice_date = doc.posting_date
+            task.invoice_reference = doc.name
+            task.customer = doc.customer
+            task.exp_start_date = exp_start_date
+            task.exp_end_date = end_date
+
+            task.insert()
+
+def update_monthly_commission_log(doc, method):
+	"""
+	Create or update Monthly Commission Log for each Sales Person in the Sales Invoice.
+	Logs incentives and invoice details for the respective employee and month.
+	"""
+    invoice_date = datetime.strptime(doc.posting_date, "%Y-%m-%d").date()
+    month_start = get_first_day(invoice_date)
+    month_end = get_last_day(invoice_date)
+    month_name = invoice_date.strftime('%B')
+
+    for sales_team_member in doc.sales_team:
+        sales_person = sales_team_member.sales_person
+        incentives = sales_team_member.incentives or 0
+
+        # Get the Employee linked to Sales Person
+        employee = frappe.db.get_value("Sales Person", sales_person, "employee")
+        if not employee:
+            frappe.log_error(f"Sales Person {sales_person} has no linked Employee.", "Monthly Commission Log")
+            continue
+
+        # Check if Monthly Commission Log exists
+        log_name = frappe.db.exists(
+            "Monthly Commission Log",
+            {
+                "employee": employee,
+                "log_month": month_name,
+                "start_date": month_start,
+                "end_date": month_end
+            }
+        )
+
+        if log_name:
+            log = frappe.get_doc("Monthly Commission Log", log_name)
+        else:
+            log = frappe.new_doc("Monthly Commission Log")
+            log.employee = employee
+            log.log_month = month_name
+            log.start_date = month_start
+            log.end_date = month_end
+
+        # Append detail row
+        log.append("monthly_commission_log", {
+            "sales_invoice": doc.name,
+            "date": invoice_date,
+            "total_amount": doc.base_grand_total,
+            "incentives": incentives
+        })
+
+        log.save(ignore_permissions=True)
+
+
+
+
