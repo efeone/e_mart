@@ -2,9 +2,8 @@ import frappe
 from frappe.utils import flt,add_months
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils import nowdate
- 
-def validate_buyback_fields(doc, method=None):
 
+def validate_buyback_fields(doc, method=None):
 	"""
 	Triggered on validation of Sales Invoice.
 
