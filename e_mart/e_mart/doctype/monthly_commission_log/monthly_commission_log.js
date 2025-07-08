@@ -3,7 +3,7 @@
 
 frappe.ui.form.on('Monthly Commission Log', {
 	refresh: function(frm) {
-		if (!frm.is_new()) {
+		if (frm.doc.docstatus === 1) {
 			frm.add_custom_button(__('Additional Salary'), function() {
 				frappe.call({
 					method: 'e_mart.e_mart.doctype.monthly_commission_log.monthly_commission_log.create_additional_salary_from_commission',
