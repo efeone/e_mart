@@ -356,8 +356,13 @@ def update_monthly_commission_log(doc, method):
 
 		log.save(ignore_permissions=True)
 
+def calculate_total_expense(doc, method):
+	"""
+	Calculate and set the total of all sales_expenses in the document.
+	"""
+    total = 0
 
+    for row in doc.get("sales_expenses", []):
+        total += flt(row.amount or 0)
 
-
-
-
+    doc.total_expense = total

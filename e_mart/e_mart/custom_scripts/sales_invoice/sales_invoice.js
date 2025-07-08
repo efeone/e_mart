@@ -8,6 +8,8 @@ frappe.ui.form.on('Sales Invoice', {
 			update_rounded_total(frm);
 		});
 		set_finance_filter(frm);
+        attach_sales_expense_grid_events(frm);
+		calculate_total_expense(frm);
 	},
 	refresh: function (frm) {
 		if (frm.doc.docstatus === 0) {
@@ -37,6 +39,7 @@ frappe.ui.form.on('Sales Invoice', {
 			}, __('Create'));
 		}
 	}
+    calculate_total_expense(frm);
 },
 	sales_type(frm) {
 		set_finance_filter(frm);
@@ -78,11 +81,13 @@ frappe.ui.form.on('Sales Invoice', {
 	validate(frm) {
 		update_emi_amount(frm);
 		generate_emi_schedule(frm);
+        calculate_total_expense(frm);
 	},
 	calculate_totals(frm) {
 		setTimeout(() => {
 			update_outstanding_amount(frm);
 			update_rounded_total(frm);
+            calculate_total_expense(frm);
 		}, 200);
 	}
 });
@@ -250,4 +255,44 @@ function generate_emi_schedule(frm) {
 	if (last_date) {
 		frm.set_value('closing_date', last_date);
 	}
+}
+
+frappe.ui.form.on('Sales Expenses', {
+    amount(frm, cdt, cdn) {
+        calculate_total_expense(frm);
+    },
+    sales_expenses_add(frm) {
+        calculate_total_expense(frm);
+    },
+    sales_expenses_remove(frm) {
+        calculate_total_expense(frm);
+    }
+});
+
+/**
+ * Attach grid-remove-row event to Sales Expenses child table.
+ * Called once onload.
+ */
+function attach_sales_expense_grid_events(frm) {
+    if (frm._sales_expense_grid_attached) return;
+
+    frm.fields_dict['sales_expenses'].grid.wrapper.on('grid-remove-row', () => {
+        calculate_total_expense(frm);
+    });
+
+    frm._sales_expense_grid_attached = true;
+}
+
+/**
+ * Sum up all amounts in Sales Expenses child table
+ * and update total_expense field.
+ */
+function calculate_total_expense(frm) {
+    let total = 0;
+
+    (frm.doc.sales_expenses || []).forEach(row => {
+        total += flt(row.amount || 0);
+    });
+
+    frm.set_value('total_expense', total);
 }
