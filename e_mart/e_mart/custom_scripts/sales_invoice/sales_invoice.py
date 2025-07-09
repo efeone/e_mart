@@ -365,3 +365,13 @@ def calculate_total_expense(doc, method):
 	for row in doc.get("sales_expenses", []):
 		total += flt(row.amount or 0)
 	doc.total_expense = total
+
+# calculate incentives based on commission rate and allocated percentage
+def map_commission_to_sales_team(doc, method):
+	"""Fetch total_commission_rate to each sales_team row as allocated_amount and compute incentives."""
+	commission_rate = doc.total_commission_rate or 0
+
+	for row in doc.sales_team:
+		row.allocated_amount = commission_rate
+		allocated_percentage = row.allocated_percentage or 0
+		row.incentives = round((commission_rate * allocated_percentage) / 100, 2)
