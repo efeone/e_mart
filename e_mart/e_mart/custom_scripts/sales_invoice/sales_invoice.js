@@ -294,3 +294,21 @@ function calculate_total_expense(frm) {
 	});
 	frm.set_value('total_expense', total);
 }
+
+// calculate incentives based on commission rate and allocated percentage
+frappe.ui.form.on("Sales Team", {
+	allocated_percentage: function(frm, cdt, cdn) {
+		setTimeout(function() {
+			var sales_person = frappe.get_doc(cdt, cdn);
+			let row = locals[cdt][cdn];
+			if (sales_person.allocated_percentage) {
+				sales_person.allocated_percentage = sales_person.allocated_percentage;
+				sales_person.allocated_amount = frm.doc.total_commission_rate;
+				sales_person.incentives = flt(
+					(sales_person.allocated_amount * row.allocated_percentage) / 100.0,
+				);
+				frm.refresh_field('sales_team');
+			}
+		}, 20);
+	}
+});

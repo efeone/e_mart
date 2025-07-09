@@ -161,7 +161,10 @@ doc_events = {
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_total_expense"
 		],
 		"on_submit": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.on_submit",
-		"before_save": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
+		"before_save":[
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.map_commission_to_sales_team",
+		]
 	},
 	"Payment Entry" : {
 		"on_submit" : "e_mart.e_mart.custom_scripts.payment_entry.payment_entry.update_down_payment_status"

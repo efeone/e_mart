@@ -19,6 +19,7 @@ def after_install():
 	create_custom_fields(get_sales_invoice_custom_fields(), ignore_validate=True, update=True)
 	create_custom_fields(get_task_custom_fields(), ignore_validate=True, update=True)
 	create_custom_fields(get_mode_of_payment_custom_fields(), ignore_validate=True, update=True)
+	create_custom_fields(get_sales_order_custom_fields(),ignore_validate=True,update=True)
 
 	create_property_setters(get_property_setters())
 
@@ -39,6 +40,7 @@ def before_uninstall():
 	delete_custom_fields(get_sales_invoice_custom_fields())
 	delete_custom_fields(get_task_custom_fields())
 	delete_custom_fields(get_mode_of_payment_custom_fields())
+	delete_custom_fields(get_sales_order_custom_fields())
 
 def delete_custom_fields(custom_fields: dict):
 	"""
@@ -552,6 +554,27 @@ def get_sales_invoice_custom_fields():
 				"label": "Total Expense",
 				"read_only": 1,
 				"insert_after": "sales_expense_col"
-			}          
+			},
+			{
+				"fieldname": "total_commission_rate",
+				"fieldtype": "Currency",
+				"label": "Total Commission",
+				"insert_after": "items"
+			},
+		]
+	}
+
+def get_sales_order_custom_fields():
+	"""
+	Custom fields that need to be added to the Sales Order Item DocType
+	"""
+	return {
+		"Sales Order": [
+			{
+				"fieldname": "total_commission_rate",
+				"fieldtype": "Currency",
+				"label": "Total Commission",
+				"insert_after": "items"
+			},
 		]
 	}
