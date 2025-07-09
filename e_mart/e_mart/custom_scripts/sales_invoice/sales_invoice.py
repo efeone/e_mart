@@ -1,15 +1,10 @@
 import frappe
-from frappe.utils import flt,add_months,nowdate,get_first_day,get_last_day,add_days
+from frappe.utils import flt,add_months
 from frappe.model.mapper import get_mapped_doc
-from datetime import datetime
 
-def on_submit(doc, method=None):
-	create_scrap_stock_entry(doc, method)
-	create_buyback_journal_entry(doc, method)
-	create_demo_tasks_on_submit(doc, method)
-	update_monthly_commission_log(doc, method)
 
 def validate_buyback_fields(doc, method=None):
+
 	"""
 	Triggered on validation of Sales Invoice.
 
@@ -207,161 +202,14 @@ def make_down_payment_entry(source_name, target_doc=None):
 		set_missing_values
 	)
 	return doc
-	
-def create_buyback_journal_entry(doc, method):
-	'''
-	Create Buyback Journal entry for Buyback amount from Sales invoice.
-	'''
-	if not doc.is_buyback or not doc.buyback_amount or doc.buyback_amount <= 0:
-		return
 
-	customer_account = doc.debit_to
-	if not customer_account:
-		frappe.throw(f"Customer receivable account (debit_to) not found in Sales Invoice {doc.name}")
+# calculate incentives based on commission rate and allocated percentage
+def map_commission_to_sales_team(doc, method):
+	"""Fetch total_commission_rate to each sales_team row as allocated_amount and compute incentives."""
+	commission_rate = doc.total_commission_rate or 0
 
-	company = doc.company or frappe.db.get_value("Sales Invoice", doc.name, "company")
-	if not company:
-		frappe.throw(f"Company not found for Sales Invoice {doc.name}")
+	for row in doc.sales_team:
+		row.allocated_amount = commission_rate
+		allocated_percentage = row.allocated_percentage or 0
+		row.incentives = round((commission_rate * allocated_percentage) / 100, 2)
 
-	buyback_account = frappe.db.get_single_value("E-mart Settings", "buyback_posting_account")
-	if not buyback_account:
-		frappe.throw("Please set 'Buyback Posting Account' in E-mart Settings.")
-
-	# Create Journal Entry
-	journal_entry = frappe.new_doc("Journal Entry")
-	journal_entry.voucher_type = "Credit Note"
-	journal_entry.posting_date = nowdate()
-	journal_entry.company = company
-	journal_entry.remark = f"Buyback adjustment for Sales Invoice {doc.name}"
-
-	# Debit Customer (receivable)
-	journal_entry.append("accounts", {
-		"account": customer_account,
-		"party_type": "Customer",
-		"party": doc.customer,
-		"debit_in_account_currency": doc.buyback_amount,
-		"reference_type": "Sales Invoice",
-		"reference_name": doc.name
-	})
-
-	# Credit Buyback Posting Account
-	journal_entry.append("accounts", {
-		"account": buyback_account,
-		"credit_in_account_currency": doc.buyback_amount
-	})
-
-	journal_entry.insert(ignore_permissions=True)
-	journal_entry.submit()
-
-	# Optional: Save Journal Entry reference if field exists
-	if frappe.get_meta(doc.doctype).has_field("buyback_journal_entry"):
-		doc.db_set("buyback_journal_entry", journal_entry.name)
-
-	frappe.msgprint(
-		f'Buyback Journal Entry Created: <a href="{frappe.utils.get_url_to_form("Journal Entry", journal_entry.name)}" target="_blank"><b>{journal_entry.name}</b></a>',alert=True,indicator='green')
-
-def create_demo_tasks_on_submit(doc, method=None):
-	"""
-	Create a Task for each Sales Invoice Item where is_demo_reqd is checked.
-	Subject, Task Type, Minimal Duration, Escalation Duration come from E-mart Settings.
-	Maps invoice_date, invoice_reference, customer, exp_start_date, and end_date into Task.
-	"""
-
-	settings = frappe.get_single("E-mart Settings")
-	task_subject_template = settings.subject or "Demo Required - {item_name} [{invoice_name}]"
-	task_type = settings.task_type or "Demo"
-	minimal_duration = settings.minimal_duration or 0
-	escalation_duration = settings.escalation_duration or 0
-
-	for item in doc.items:
-		if item.get("is_demo_reqd"):
-			subject = task_subject_template.format(
-				item_name=item.item_name,
-				invoice_name=doc.name
-			)
-
-			exp_start_date = add_days(doc.posting_date, minimal_duration)
-			end_date = add_days(doc.posting_date, escalation_duration)
-
-			task = frappe.new_doc("Task")
-			task.subject = subject
-			task.type = task_type
-			task.status = "Open"
-			task.reference_type = "Sales Invoice"
-			task.reference_name = doc.name
-			task.description = (
-				f"Demo required for Item: {item.item_name} ({item.item_code})\n"
-				f"Qty: {item.qty}\n"
-				f"Customer: {doc.customer}\n"
-			)
-			
-			task.invoice_date = doc.posting_date
-			task.invoice_reference = doc.name
-			task.customer = doc.customer
-			task.exp_start_date = exp_start_date
-			task.exp_end_date = end_date
-
-			task.insert(ignore_permissions=True)
-
-def update_monthly_commission_log(doc, method):
-	"""
-	Create or update Monthly Commission Log for each Sales Person in the Sales Invoice.
-	Logs incentives and invoice details for the respective employee and month.
-	"""
-	invoice_date = datetime.strptime(doc.posting_date, "%Y-%m-%d").date()
-	month_start = get_first_day(invoice_date)
-	month_end = get_last_day(invoice_date)
-	month_name = invoice_date.strftime('%B')
-
-	for sales_team_member in doc.sales_team:
-		sales_person = sales_team_member.sales_person
-		incentives = sales_team_member.incentives or 0
-
-		# Get the Employee linked to Sales Person
-		employee = frappe.db.get_value("Sales Person", sales_person, "employee")
-		if not employee:
-			frappe.log_error(
-				f"Sales Person {sales_person} has no linked Employee.",
-				"Monthly Commission Log"
-			)
-			continue
-
-		# Check if Monthly Commission Log exists
-		log_name = frappe.db.exists(
-			"Monthly Commission Log",
-			{
-				"employee": employee,
-				"log_month": month_name,
-				"start_date": month_start,
-				"end_date": month_end
-			}
-		)
-
-		if log_name:
-			log = frappe.get_doc("Monthly Commission Log", log_name)
-		else:
-			log = frappe.new_doc("Monthly Commission Log")
-			log.employee = employee
-			log.log_month = month_name
-			log.start_date = month_start
-			log.end_date = month_end
-
-		# Append detail row
-		log.append("monthly_commission_log", {
-			"sales_invoice": doc.name,
-			"date": invoice_date,
-			"total_amount": doc.base_grand_total,
-			"incentives": incentives
-		})
-
-		log.save(ignore_permissions=True)
-
-def calculate_total_expense(doc, method):
-	"""
-	Calculate and set the total of all sales_expenses in the document.
-	"""
-	total = 0
-
-	for row in doc.get("sales_expenses", []):
-		total += flt(row.amount or 0)
-	doc.total_expense = total

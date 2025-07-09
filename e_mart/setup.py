@@ -19,6 +19,7 @@ def after_install():
 	create_custom_fields(get_sales_invoice_custom_fields(), ignore_validate=True, update=True)
 	create_custom_fields(get_task_custom_fields(), ignore_validate=True, update=True)
 	create_custom_fields(get_mode_of_payment_custom_fields(), ignore_validate=True, update=True)
+	create_custom_fields(get_sales_order_custom_fields(),ignore_validate=True, update=True)
 
 	create_property_setters(get_property_setters())
 
@@ -39,6 +40,7 @@ def before_uninstall():
 	delete_custom_fields(get_sales_invoice_custom_fields())
 	delete_custom_fields(get_task_custom_fields())
 	delete_custom_fields(get_mode_of_payment_custom_fields())
+	delete_custom_fields(get_sales_order_custom_fields())
 
 def delete_custom_fields(custom_fields: dict):
 	"""
@@ -170,12 +172,6 @@ def get_item_custom_fields():
 				"label": "MRP",
 				"insert_after": "stock_uom"
 			},
-			{
-				"fieldname": "sales_expense_contribution",
-				"fieldtype": "Data",
-				"label": "Sales Expense Contribution",
-				"insert_after": "commission_value"
-			},
 		]
 	}
 
@@ -241,12 +237,6 @@ def get_sales_invoice_item_custom_fields():
 				"read_only": 1,
 				"insert_after": "is_free_item"
 			},
-			{
-				"fieldname": "sales_expense_contribution",
-				"fieldtype": "Data",
-				"label": "Sales Expense Contribution",
-				"insert_after": "is_demo_reqd"
-			}
 		]
 	}
 
@@ -523,35 +513,25 @@ def get_sales_invoice_custom_fields():
 				"insert_after": "emi_status"
 			},
 			{
-				"fieldname": "sales_expense_tab",
-				"fieldtype": "Tab Break",
-				"label": "Sales Expenses",
-				"insert_after": "timesheets"
-			},
-			{
-				"fieldname": "sales_expenses",
-				"fieldtype": "Table",
-				"label": "Sales Expenses",
-				"options":"Sales Expenses",
-				"insert_after": "sales_expense_tab"
-			},
-			{
-				"fieldname": "sales_expense_sec",
-				"fieldtype": "Section Break",
-				"label": " ",
-				"insert_after": "sales_expenses"
-			},
-			{
-				"fieldname": "sales_expense_col",
-				"fieldtype": "Column Break",
-				"insert_after": "sales_expense_sec"
-			},
-			{
-				"fieldname": "total_expense",
+				"fieldname": "total_commission_rate",
 				"fieldtype": "Currency",
-				"label": "Total Expense",
-				"read_only": 1,
-				"insert_after": "sales_expense_col"
-			}          
+				"label": "Total Commission",
+				"insert_after": "items"
+			},
+		]
+	}
+
+def get_sales_order_custom_fields():
+	"""
+	Custom fields that need to be added to the Sales Order Item DocType
+	"""
+	return {
+		"Sales Order": [
+			{
+				"fieldname": "total_commission_rate",
+				"fieldtype": "Currency",
+				"label": "Total Commission",
+				"insert_after": "items"
+			},
 		]
 	}

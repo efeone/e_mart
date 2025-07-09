@@ -155,13 +155,15 @@ doc_events = {
 		"on_submit": "e_mart.e_mart.custom_scripts.purchase_invoice.purchase_invoice.on_submit"
 	},
 	"Sales Invoice": {
-		"validate":[
-			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields",
-			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.generate_emi_schedule",
-			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_total_expense"
-		],
-		"on_submit": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.on_submit",
-		"before_save": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
+		 "validate":[
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields",
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.generate_emi_schedule"
+			],
+		 "on_submit": "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_scrap_stock_entry",
+		 "before_save":[
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.map_commission_to_sales_team",
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
+		] 
 	},
 	"Payment Entry" : {
 		"on_submit" : "e_mart.e_mart.custom_scripts.payment_entry.payment_entry.update_down_payment_status"

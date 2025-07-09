@@ -7,9 +7,7 @@ frappe.ui.form.on('Sales Invoice', {
 			update_total_buyback_amount(frm);
 			update_rounded_total(frm);
 		});
-		set_finance_filter(frm);
-		attach_sales_expense_grid_events(frm);
-		calculate_total_expense(frm);
+		set_customer_filter(frm);
 	},
 	refresh: function (frm) {
 		if (frm.doc.docstatus === 0) {
@@ -39,10 +37,9 @@ frappe.ui.form.on('Sales Invoice', {
 			}, __('Create'));
 		}
 	}
-	calculate_total_expense(frm);
 },
 	sales_type(frm) {
-		set_finance_filter(frm);
+		set_customer_filter(frm);
 	},
 	// Triggered when relevant fields change for EMI recalculation
 	down_payment_amount: function(frm) {
@@ -81,13 +78,11 @@ frappe.ui.form.on('Sales Invoice', {
 	validate(frm) {
 		update_emi_amount(frm);
 		generate_emi_schedule(frm);
-		calculate_total_expense(frm);
 	},
 	calculate_totals(frm) {
 		setTimeout(() => {
 			update_outstanding_amount(frm);
 			update_rounded_total(frm);
-			calculate_total_expense(frm);
 		}, 200);
 	}
 });
@@ -187,12 +182,12 @@ function update_rounded_total(frm) {
 
 // Filter customer field to show only providers when sales_type is EMI
 // If selected customer is not a provider, clear it
-function set_finance_filter(frm) {
-	frm.set_query("mode_of_payment", () => {
+function set_customer_filter(frm) {
+	frm.set_query("customer", () => {
 		if (frm.doc.sales_type === "EMI") {
 			return {
 				filters: {
-					is_finance: 1
+					is_provider: 1
 				}
 			};
 		} else {
@@ -257,40 +252,20 @@ function generate_emi_schedule(frm) {
 	}
 }
 
-frappe.ui.form.on('Sales Expenses', {
-	amount(frm, cdt, cdn) {
-		calculate_total_expense(frm);
-	},
-	sales_expenses_add(frm) {
-		calculate_total_expense(frm);
-	},
-	sales_expenses_remove(frm) {
-		calculate_total_expense(frm);
+// calculate commission rate based on commission rate and allocated percentage
+frappe.ui.form.on("Sales Team", {
+	allocated_percentage: function(frm, cdt, cdn) {
+		setTimeout(function() {
+			var sales_person = frappe.get_doc(cdt, cdn);
+			let row = locals[cdt][cdn];
+			if (sales_person.allocated_percentage) {
+				sales_person.allocated_percentage = sales_person.allocated_percentage;
+				sales_person.allocated_amount = frm.doc.total_commission_rate;
+				sales_person.incentives = flt(
+					(sales_person.allocated_amount * row.allocated_percentage) / 100.0,
+				);
+				frm.refresh_field('sales_team');
+			}
+		}, 20);
 	}
 });
-
-/**
- * Attach grid-remove-row event to Sales Expenses child table.
- */
-function attach_sales_expense_grid_events(frm) {
-	if (frm._sales_expense_grid_attached) return;
-
-	frm.fields_dict['sales_expenses'].grid.wrapper.on('grid-remove-row', () => {
-		calculate_total_expense(frm);
-	});
-
-	frm._sales_expense_grid_attached = true;
-}
-
-/**
- * Sum up all amounts in Sales Expenses child table
- * and update total_expense field.
- */
-function calculate_total_expense(frm) {
-	let total = 0;
-
-	(frm.doc.sales_expenses || []).forEach(row => {
-		total += flt(row.amount || 0);
-	});
-	frm.set_value('total_expense', total);
-}
