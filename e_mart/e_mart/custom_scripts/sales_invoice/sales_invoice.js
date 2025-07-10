@@ -155,10 +155,12 @@ function update_total_buyback_amount(frm) {
 	frm.set_value('buyback_amount', total);
 	update_outstanding_amount(frm);
 	update_rounded_total(frm);
-    update_grand_total(frm);
+	update_grand_total(frm);
 }
 
-// Calculate Outstanding Amount
+/*
+* Calculate Outstanding Amount based on buyback amount
+*/
 function update_outstanding_amount(frm) {
 	if (frm.doc.docstatus === 0) { 
 		const total = flt(frm.doc.total || 0);
@@ -170,11 +172,13 @@ function update_outstanding_amount(frm) {
 			outstanding -= buyback;
 		}
 		frm.set_value('outstanding_amount', Math.max(outstanding, 0));
-        update_grand_total(frm); 
+		update_grand_total(frm); 
 	}
 }
 
-// Calculate Rounded Total
+/*
+* Calculate Rounded Total based on buyback amount
+*/
 function update_rounded_total(frm) {
 	const total = flt(frm.doc.total || 0);
 	const taxes = flt(frm.doc.total_taxes_and_charges || 0);
@@ -187,7 +191,9 @@ function update_rounded_total(frm) {
 	frm.set_value('rounded_total', Math.round(grand_total));
 }
 
-// Calculate Grand Total
+/*
+* Calculate Grand Total based on buyback amount
+*/
 function update_grand_total(frm) {
 	const total = flt(frm.doc.total || 0);
 	const taxes = flt(frm.doc.total_taxes_and_charges || 0);

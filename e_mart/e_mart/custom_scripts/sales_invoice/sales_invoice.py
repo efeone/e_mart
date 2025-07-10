@@ -15,7 +15,7 @@ def validate_buyback_fields(doc, method=None):
 
 	1. Calculates amount for each Buyback Item row.
 	2. Sums up all row amounts into buyback_amount.
-	3. Adjusts the outstanding_amount if is_buyback is checked.
+	3. Adjusts the outstanding_amount, rounded total and grand total if is_buyback check box is checked
 	"""
 
 	total = 0
