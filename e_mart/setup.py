@@ -20,6 +20,7 @@ def after_install():
 	create_custom_fields(get_task_custom_fields(), ignore_validate=True, update=True)
 	create_custom_fields(get_mode_of_payment_custom_fields(), ignore_validate=True, update=True)
 	create_custom_fields(get_sales_order_custom_fields(),ignore_validate=True,update=True)
+	create_custom_fields(get_sales_team_custom_fields(),ignore_validate=True,update=True)
 
 	create_property_setters(get_property_setters())
 
@@ -41,6 +42,7 @@ def before_uninstall():
 	delete_custom_fields(get_task_custom_fields())
 	delete_custom_fields(get_mode_of_payment_custom_fields())
 	delete_custom_fields(get_sales_order_custom_fields())
+	delete_custom_fields(get_sales_team_custom_fields())
 
 def delete_custom_fields(custom_fields: dict):
 	"""
@@ -379,7 +381,22 @@ def get_property_setters():
 			"field_name": "grant_commission",
 			"property": "hidden",
 			"value": 1
-		}
+		},
+		{
+			"doctype_or_field": "DocField",
+			"doc_type": "Sales Team",
+			"field_name": "allocated_amount",
+			"property": "hidden",
+			"value": 1
+		},
+		{
+			"doctype_or_field": "DocField",
+			"doc_type": "Sales Team",
+			"field_name": "incentives",
+			"property": "hidden",
+			"value": 1
+		},
+
 	]
 def get_sales_invoice_custom_fields():
 	"""
@@ -575,6 +592,27 @@ def get_sales_order_custom_fields():
 				"fieldtype": "Currency",
 				"label": "Total Commission",
 				"insert_after": "items"
+			},
+		]
+	}
+
+def get_sales_team_custom_fields():
+	"""
+	Custom fields that need to be added to the Sales Team DocType
+	"""
+	return {
+		"Sales Team": [
+			{
+				"fieldname": "total_commission_rate",
+				"fieldtype": "Currency",
+				"label": "Total Commission",
+				"insert_after": "contact_no"
+			},
+			{
+				"fieldname": "incentive",
+				"fieldtype": "Currency",
+				"label": "Incentive",
+				"insert_after": "total_commission_rate"
 			},
 		]
 	}
