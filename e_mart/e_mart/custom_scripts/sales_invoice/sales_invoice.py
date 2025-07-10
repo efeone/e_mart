@@ -372,6 +372,7 @@ def map_commission_to_sales_team(doc, method):
 	commission_rate = doc.total_commission_rate or 0
 
 	for row in doc.sales_team:
-		row.allocated_amount = commission_rate
+		row.total_commission_rate = commission_rate
 		allocated_percentage = row.allocated_percentage or 0
-		row.incentives = round((commission_rate * allocated_percentage) / 100, 2)
+		row.incentive = round((commission_rate * allocated_percentage) / 100, 2)
+
