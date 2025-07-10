@@ -15,7 +15,7 @@ def validate_buyback_fields(doc, method=None):
 
 	1. Calculates amount for each Buyback Item row.
 	2. Sums up all row amounts into buyback_amount.
-	3. Adjusts the outstanding_amount if is_buyback is checked.
+	3. Adjusts the outstanding_amount, rounded total and grand total if is_buyback check box is checked
 	"""
 
 	total = 0
@@ -35,10 +35,12 @@ def validate_buyback_fields(doc, method=None):
 		grand_total -= doc.buyback_amount
 	doc.outstanding_amount = round(grand_total)
 
-	# 4. Set rounded_total
+	# 4. Set rounded_total and Grand Total
 	grand_total = (doc.total or 0) + (doc.total_taxes_and_charges or 0)
 	if doc.is_buyback and doc.buyback_amount:
 		grand_total -= doc.buyback_amount
+	doc.grand_total = grand_total
+	doc.outstanding_amount = round(grand_total)
 	doc.rounded_total = round(grand_total)
 
 def create_scrap_stock_entry(doc, method):
