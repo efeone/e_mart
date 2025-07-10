@@ -436,7 +436,8 @@ def get_sales_invoice_custom_fields():
 				"label": "Buyback Items",
 				"options": "Buyback Item",
 				"insert_after": "buyback_section",
-				"depends_on": "eval:doc.is_buyback"
+				"depends_on": "eval:doc.is_buyback",
+				"mandatory_depends_on": "eval:doc.is_buyback"
 			},
 			{
 				"fieldname": "buyback_amount_section",
@@ -539,7 +540,7 @@ def get_sales_invoice_custom_fields():
 				"fieldname": "closing_date",
 				"fieldtype": "Date",
 				"label": "Closing Date",
-				"insert_after": "emi_status"
+				"insert_after": "no_of_installment"
 			},
 			{
 				"fieldname": "sales_expense_tab",
