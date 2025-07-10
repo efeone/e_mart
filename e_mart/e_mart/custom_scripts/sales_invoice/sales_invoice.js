@@ -200,6 +200,18 @@ function set_finance_filter(frm) {
 		}
 	});
 
+	frm.set_query("emi_provider", () => {
+		if (frm.doc.sales_type === "EMI") {
+			return {
+				filters: {
+					is_provider: 1
+				}
+			};
+		} else {
+			return {};
+		}
+	});
+
 	if (frm.doc.sales_type === "EMI" && frm.doc.customer) {
 		frappe.db.get_value("Customer", frm.doc.customer, "is_provider", (r) => {
 			if (r && r.is_provider !== 1) {

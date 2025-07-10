@@ -578,6 +578,14 @@ def get_sales_invoice_custom_fields():
 				"label": "Total Commission",
 				"insert_after": "items"
 			},
+			{
+				"fieldname": "emi_provider",
+				"fieldtype": "Link",
+				"options": "Customer",
+				"label": "EMI Provider",
+				"insert_after": "sales_type",
+				"depends_on": "eval:doc.sales_type == 'EMI'"
+			},
 		]
 	}
 
