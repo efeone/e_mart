@@ -167,8 +167,7 @@ doc_events = {
 
 		],
 		"before_save":[
-			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.map_commission_to_sales_team",
-			# "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.map_commission_to_sales_team"
 		],
 	},
 	"Payment Entry" : {
