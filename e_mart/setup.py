@@ -481,7 +481,8 @@ def get_sales_invoice_custom_fields():
 				"fieldname": "emi_amount",
 				"fieldtype": "Currency",
 				"label": "EMI AMOUNT",
-				"insert_after": "down_payment_amount"
+				"insert_after": "down_payment_amount",
+				"read_only": 1
 			},
 			{
 				"fieldname": "emi_date",
@@ -520,7 +521,8 @@ def get_sales_invoice_custom_fields():
 				"fieldtype": "Table",
 				"label": "EMI Schedule",
 				"options":"EMI Duration",
-				"insert_after": "emi_duration_section"
+				"insert_after": "emi_duration_section",
+				"read_only": 1
 			},
 			{
 				"fieldname": "down_payment",
@@ -540,7 +542,8 @@ def get_sales_invoice_custom_fields():
 				"fieldname": "closing_date",
 				"fieldtype": "Date",
 				"label": "Closing Date",
-				"insert_after": "no_of_installment"
+				"insert_after": "no_of_installment",
+				"read_only": 1
 			},
 			{
 				"fieldname": "sales_expense_tab",

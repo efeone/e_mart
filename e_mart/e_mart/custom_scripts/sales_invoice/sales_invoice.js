@@ -247,12 +247,13 @@ function set_finance_filter(frm) {
  * and updates the emi_amount field immediately.
  */
 function update_emi_amount(frm) {
-	let down_payment = frm.doc.down_payment_amount || 0;
-	let total = frm.doc.total || 0;
-	let emi_amount = total - down_payment;
+    const down_payment = flt(frm.doc.down_payment_amount || 0);
+    const outstanding = flt(frm.doc.outstanding_amount || 0);
+    const emi_amount = outstanding - down_payment;
 
-	frm.set_value('emi_amount', emi_amount);
+    frm.set_value('emi_amount', Math.max(emi_amount, 0));
 }
+
 
 /**
  * Generates EMI Duration child table rows dynamically

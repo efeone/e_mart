@@ -19,12 +19,14 @@
   {
    "fieldname": "start_date",
    "fieldtype": "Date",
-   "label": "Start Date"
+   "label": "Start Date",
+   "read_only": 1
   },
   {
    "fieldname": "end_date",
    "fieldtype": "Date",
-   "label": "End Date"
+   "label": "End Date",
+   "read_only": 1
   },
   {
    "fieldname": "log_month",
@@ -37,10 +39,12 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "monthly_commission_log",
    "fieldtype": "Table",
    "label": "Monthly Commission Log Detail",
-   "options": "Monthly Commission Logs"
+   "options": "Monthly Commission Logs",
+   "read_only": 1
   },
   {
    "fieldname": "amended_from",
@@ -56,7 +60,8 @@
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Employee",
-   "options": "Employee"
+   "options": "Employee",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_wwtu",
@@ -67,7 +72,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-04 12:23:09.522388",
+ "modified": "2025-07-14 10:18:32.833165",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "Monthly Commission Log",

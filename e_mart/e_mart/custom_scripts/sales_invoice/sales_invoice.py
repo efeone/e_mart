@@ -2,6 +2,9 @@ import frappe
 from frappe.utils import flt,add_months,nowdate,get_first_day,get_last_day,add_days
 from frappe.model.mapper import get_mapped_doc
 from datetime import datetime
+from frappe.utils import flt
+from frappe.utils import get_url_to_form
+
 
 def on_submit(doc, method=None):
 	create_scrap_stock_entry(doc, method)
@@ -82,9 +85,9 @@ def update_emi_amount(doc, method):
 	"""
 	Generate the emi amount after deducting the down payment
 	"""
-	down_payment = doc.down_payment_amount or 0
-	total = doc.total or 0
-	doc.emi_amount = total - down_payment
+	down_payment = flt(doc.down_payment_amount)
+	outstanding = flt(doc.outstanding_amount)
+	doc.emi_amount = outstanding - down_payment
 
 def generate_emi_schedule(doc, method):
 	"""
@@ -317,7 +320,7 @@ def update_monthly_commission_log(doc, method):
 
 	for sales_team_member in doc.sales_team:
 		sales_person = sales_team_member.sales_person
-		incentives = sales_team_member.incentives or 0
+		incentives = sales_team_member.incentive or 0
 
 		# Get the Employee linked to Sales Person
 		employee = frappe.db.get_value("Sales Person", sales_person, "employee")
@@ -357,6 +360,12 @@ def update_monthly_commission_log(doc, method):
 		})
 
 		log.save(ignore_permissions=True)
+		link = get_url_to_form("Monthly Commission Log", log.name)
+		frappe.msgprint(
+			f'Monthly Commission Log Created/Updated: <a href="{link}" target="_blank"><b>{log.name}</b></a>',
+			alert=True,
+			indicator='green'
+		)
 
 def calculate_total_expense(doc, method):
 	"""
