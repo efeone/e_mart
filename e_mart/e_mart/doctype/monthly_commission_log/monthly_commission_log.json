@@ -39,6 +39,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "monthly_commission_log",
    "fieldtype": "Table",
    "label": "Monthly Commission Log Detail",
@@ -71,7 +72,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-11 13:26:21.020253",
+ "modified": "2025-07-14 10:18:32.833165",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "Monthly Commission Log",
