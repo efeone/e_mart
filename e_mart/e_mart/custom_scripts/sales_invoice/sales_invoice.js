@@ -10,11 +10,13 @@ frappe.ui.form.on('Sales Invoice', {
 		set_finance_filter(frm);
 		attach_sales_expense_grid_events(frm);
 		calculate_total_expense(frm);
+		update_emi_amount(frm)
 	},
 	refresh: function (frm) {
 		if (frm.doc.docstatus === 0) {
 			update_outstanding_amount(frm);
 			update_rounded_total(frm);
+			update_emi_amount(frm)
 		}
 		if (!frm.is_new() && frm.doc.sales_type === "EMI") {
 			frm.add_custom_button(__('Create Finance Invoice'), function () {
@@ -89,7 +91,7 @@ frappe.ui.form.on('Sales Invoice', {
 			update_rounded_total(frm);
 			calculate_total_expense(frm);
 		}, 200);
-	}
+	},
 });
 // Buyback Item child table
 frappe.ui.form.on('Buyback Item', {
@@ -173,6 +175,7 @@ function update_outstanding_amount(frm) {
 		}
 		frm.set_value('outstanding_amount', Math.max(outstanding, 0));
 		update_grand_total(frm); 
+		update_emi_amount(frm);
 	}
 }
 
@@ -247,11 +250,12 @@ function set_finance_filter(frm) {
  * and updates the emi_amount field immediately.
  */
 function update_emi_amount(frm) {
-    const down_payment = flt(frm.doc.down_payment_amount || 0);
-    const outstanding = flt(frm.doc.outstanding_amount || 0);
-    const emi_amount = outstanding - down_payment;
 
-    frm.set_value('emi_amount', Math.max(emi_amount, 0));
+	const down_payment = flt(frm.doc.down_payment_amount || 0);
+	const outstanding = flt(frm.doc.outstanding_amount || 0);
+	const emi_amount = outstanding - down_payment;
+
+	frm.set_value('emi_amount', Math.max(emi_amount, 0));
 }
 
 
