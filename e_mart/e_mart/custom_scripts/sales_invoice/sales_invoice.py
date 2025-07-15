@@ -239,20 +239,20 @@ def create_buyback_journal_entry(doc, method):
 	journal_entry.company = company
 	journal_entry.remark = f"Buyback adjustment for Sales Invoice {doc.name}"
 
-	# Debit Customer (receivable)
+	# Credit Customer (receivable)
 	journal_entry.append("accounts", {
 		"account": customer_account,
 		"party_type": "Customer",
 		"party": doc.customer,
-		"debit_in_account_currency": doc.buyback_amount,
+		"credit_in_account_currency": doc.buyback_amount,
 		"reference_type": "Sales Invoice",
 		"reference_name": doc.name
 	})
 
-	# Credit Buyback Posting Account
+	# Dedit Buyback Posting Account
 	journal_entry.append("accounts", {
 		"account": buyback_account,
-		"credit_in_account_currency": doc.buyback_amount
+		"debit_in_account_currency": doc.buyback_amount
 	})
 
 	journal_entry.insert(ignore_permissions=True)

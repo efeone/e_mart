@@ -5,15 +5,16 @@ import frappe
 
 def update_schema_discount_amount(doc, method):
     """
-    Updates the parent schema_discount_amount field with the sum of all child schema_discount_amount values.
+    Updates schema_discount_amount in the parent document during validate:
+    - If purchase_schema == "item-wise", calculate total from child rows.
+    - If purchase_schema == "invoice-level", keep user-entered value.
     """
-    total_schema_discount = 0
+    if doc.purchase_schema == "item-wise":
+        total_schema_discount = 0
+        for item in doc.items:
+            total_schema_discount += item.schema_discount_amount or 0
 
-    for item in doc.items:
-        if item.schema_discount_amount:
-            total_schema_discount += item.schema_discount_amount
-
-    doc.schema_discount_amount = total_schema_discount
+        doc.schema_discount_amount = total_schema_discount
 
 def on_submit(doc, method):
     create_debit_note_log(doc)
