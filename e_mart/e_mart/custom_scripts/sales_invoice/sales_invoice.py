@@ -387,3 +387,12 @@ def map_commission_to_sales_team(doc, method):
 		allocated_percentage = row.allocated_percentage or 0
 		row.incentive = round((commission_rate * allocated_percentage) / 100, 2)
 
+def calculate_profit_for_commission(doc, method):
+	"""Calculates profit for commission for each item by subtracting its Sales Expense Contribution from the total expense."""
+	total_expense = flt(doc.total_expense or 0)
+
+	for item in doc.items:
+		contribution = flt(item.sales_expense_contribution or 0)
+		profit = total_expense - contribution
+		item.profit_for_commission = profit
+

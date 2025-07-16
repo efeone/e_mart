@@ -41,8 +41,8 @@ frappe.ui.form.on('Sales Invoice', {
 			}, __('Create'));
 		}
 	}
-	calculate_total_expense(frm);
-},
+	    calculate_total_expense(frm);
+	},
 	sales_type(frm) {
 		set_finance_filter(frm);
 	},
@@ -84,6 +84,7 @@ frappe.ui.form.on('Sales Invoice', {
 		update_emi_amount(frm);
 		generate_emi_schedule(frm);
 		calculate_total_expense(frm);
+        update_profit_for_commission(frm);
 	},
 	calculate_totals(frm) {
 		setTimeout(() => {
@@ -92,6 +93,9 @@ frappe.ui.form.on('Sales Invoice', {
 			calculate_total_expense(frm);
 		}, 200);
 	},
+    total_expense(frm) {
+		update_profit_for_commission(frm);
+	}
 });
 // Buyback Item child table
 frappe.ui.form.on('Buyback Item', {
@@ -115,13 +119,29 @@ frappe.ui.form.on('Sales Invoice Item', {
 	},
 	amount(frm) {
 		frm.trigger("calculate_totals");
+		calculate_total_expense(frm);
 	},
 	items_add(frm) {
 		frm.trigger("calculate_totals");
 	},
 	items_remove(frm) {
 		frm.trigger("calculate_totals");
-	}
+	},
+	item_code(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if (row.item_code) {
+            frappe.db.get_value("Item", row.item_code, "sales_expense_contribution")
+            .then(r => {
+                if (r.message) {
+                    frappe.model.set_value(cdt, cdn, "sales_expense_contribution", r.message.sales_expense_contribution);
+                    update_profit_for_commission(frm);
+                    }
+                });
+            }
+    },
+	sales_expense_contribution(frm, cdt, cdn) {
+        update_profit_for_commission(frm);
+    }
 });
 
 // Taxes child table
@@ -331,6 +351,7 @@ function calculate_total_expense(frm) {
 		total += flt(row.amount || 0);
 	});
 	frm.set_value('total_expense', total);
+	update_profit_for_commission(frm);
 }
 
 frappe.ui.form.on("Sales Team", {
@@ -347,3 +368,20 @@ frappe.ui.form.on("Sales Team", {
 			}
 	}
 });
+
+/**
+ * Calculates the profit for Commission for each item by subtracting its Sales Expense Contribution
+ * from the total expense.
+ */
+function update_profit_for_commission(frm) {
+	const total_expense = flt(frm.doc.total_expense || 0);
+
+	(frm.doc.items || []).forEach(row => {
+		const contribution = flt(row.sales_expense_contribution || 0);
+		const profit = total_expense - contribution;
+		// Set profit_for_commission for each item
+		frappe.model.set_value(row.doctype, row.name, 'profit_for_commission', profit);
+	});
+
+	frm.refresh_field('items');
+}
