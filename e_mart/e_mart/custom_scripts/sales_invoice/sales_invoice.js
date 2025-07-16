@@ -32,15 +32,15 @@ frappe.ui.form.on('Sales Invoice', {
 					}
 				});
 			});
-		if (frm.doc.docstatus === 1 && frm.doc.down_payment && frm.doc.down_payment_amount) {
-			frm.add_custom_button(__('Down Payment'), function() {
-				frappe.model.open_mapped_doc({
-					method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.make_down_payment_entry",
-					source_name: frm.doc.name  
-				});
-			}, __('Create'));
-		}
-	}
+            if (frm.doc.docstatus === 1 && frm.doc.down_payment && frm.doc.down_payment_amount && frm.doc.down_payment_paid == 0 ) {
+                frm.add_custom_button(__('Down Payment'), function() {
+                    frappe.model.open_mapped_doc({
+                        method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.make_down_payment_entry",
+                        source_name: frm.doc.name
+                    });
+                }, __('Create'));
+            }
+        }
 	    calculate_total_expense(frm);
 	},
 	sales_type(frm) {
