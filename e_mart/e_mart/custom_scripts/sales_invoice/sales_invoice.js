@@ -256,7 +256,7 @@ function set_finance_filter(frm) {
 		}
 	});
 
-	if (frm.doc.sales_type === "EMI" && frm.doc.customer) {
+	if (frm.doc.docstatus === 0 && frm.doc.sales_type === "EMI" && frm.doc.customer) {
 		frappe.db.get_value("Customer", frm.doc.customer, "is_provider", (r) => {
 			if (r && r.is_provider !== 1) {
 				frm.set_value("customer", null);
@@ -270,7 +270,9 @@ function set_finance_filter(frm) {
  * and updates the emi_amount field immediately.
  */
 function update_emi_amount(frm) {
-
+    if (frm.doc.docstatus !== 0) {
+		return;
+	}
 	const down_payment = flt(frm.doc.down_payment_amount || 0);
 	const outstanding = flt(frm.doc.outstanding_amount || 0);
 	const emi_amount = outstanding - down_payment;

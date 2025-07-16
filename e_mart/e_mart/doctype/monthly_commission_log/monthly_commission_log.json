@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "employee",
+  "employee_name",
   "log_month",
   "column_break_wwtu",
   "start_date",
@@ -66,13 +67,20 @@
   {
    "fieldname": "column_break_wwtu",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-14 10:18:32.833165",
+ "modified": "2025-07-15 17:07:20.173413",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "Monthly Commission Log",
