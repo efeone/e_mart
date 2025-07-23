@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestE-martSettings(FrappeTestCase):
+class TestEmartSettings(FrappeTestCase):
 	pass
