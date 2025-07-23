@@ -24,15 +24,15 @@ def create_additional_salary_from_commission(log_name):
 	)
 
 	total_incentive = sum(row.incentives for row in log.monthly_commission_log if row.incentives)
-	settings = frappe.get_single("E-mart Settings")
-	if not settings.additional_salary_component:
+	salary_component = frappe.db.get_single_value("E-mart Settings", "additional_salary_component")
+	if not salary_component:
 		frappe.throw("Additional Salary Component is not set in E-mart Settings.")
 
 	doc = frappe.get_doc({
 		"doctype": "Additional Salary",
 		"employee": log.employee,
 		"company": frappe.defaults.get_user_default("company"),
-		"salary_component": settings.additional_salary_component,
+		"salary_component": salary_component,
 		"amount": total_incentive,
 		"payroll_date": latest_date,
 		"overwrite_salary_structure_amount": 1
