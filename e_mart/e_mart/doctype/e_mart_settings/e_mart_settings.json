@@ -12,6 +12,8 @@
   "scrap_warehouse",
   "column_break_bgwq",
   "buyback_posting_account",
+  "column_break_aixl",
+  "additional_salary_component",
   "demo_schedule_details_tab",
   "subject",
   "task_type",
@@ -85,13 +87,23 @@
    "fieldtype": "Link",
    "label": "Buyback Posting Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "column_break_aixl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "additional_salary_component",
+   "fieldtype": "Link",
+   "label": "Additional Salary Component",
+   "options": "Salary Component"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-04 10:39:11.057244",
+ "modified": "2025-07-23 12:40:56.440831",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "E-mart Settings",
@@ -108,6 +120,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
