@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.utils import getdate
+from frappe import _
 from frappe.model.document import Document
 
 class MonthlyCommissionLog(Document):
@@ -26,7 +27,7 @@ def create_additional_salary_from_commission(log_name):
 	total_incentive = sum(row.incentives for row in log.monthly_commission_log if row.incentives)
 	salary_component = frappe.db.get_single_value("E-mart Settings", "additional_salary_component")
 	if not salary_component:
-		frappe.throw("Additional Salary Component is not set in E-mart Settings.")
+		frappe.throw(_("Please set the Additional Salary Component in E-mart Settings before proceeding."),title=_("Configuration Required"))
 
 	doc = frappe.get_doc({
 		"doctype": "Additional Salary",
