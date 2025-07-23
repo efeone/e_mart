@@ -35,6 +35,7 @@
    "in_list_view": 1,
    "label": "Supplier",
    "options": "Supplier",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -45,13 +46,15 @@
    "fieldname": "purchase_invoice",
    "fieldtype": "Link",
    "label": "Purchase Invoice",
-   "options": "Purchase Invoice"
+   "options": "Purchase Invoice",
+   "read_only": 1
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nSubmitted\nRejected\nCancelled"
+   "options": "Pending\nSubmitted\nRejected\nCancelled",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_omvk",
@@ -72,7 +75,8 @@
    "fieldname": "jv_reference",
    "fieldtype": "Link",
    "label": "JV Reference",
-   "options": "Journal Entry"
+   "options": "Journal Entry",
+   "read_only": 1
   },
   {
    "fieldname": "supplier_credit_note_no",
@@ -90,24 +94,28 @@
   {
    "fieldname": "total_invoice_amount",
    "fieldtype": "Currency",
-   "label": "Total Invoice Amount"
+   "label": "Total Invoice Amount",
+   "read_only": 1
   },
   {
    "fieldname": "discounted_amount",
    "fieldtype": "Currency",
-   "label": "Discounted Amount"
+   "label": "Discounted Amount",
+   "read_only": 1
   },
   {
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "options": "Debit Note Item"
+   "options": "Debit Note Item",
+   "read_only": 1
   },
   {
    "fieldname": "purchase_schema",
    "fieldtype": "Select",
    "label": "Purchase Schema",
-   "options": "Item-wise\nInvoice-level"
+   "options": "Item-wise\nInvoice-level",
+   "read_only": 1
   },
   {
    "collapsible": 1,
@@ -148,7 +156,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-27 12:28:32.656273",
+ "modified": "2025-07-23 14:31:18.839508",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "Debit Note Log",
@@ -168,6 +176,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
