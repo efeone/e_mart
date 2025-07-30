@@ -576,16 +576,55 @@ def get_sales_invoice_custom_fields():
 				"fieldname": "down_payment",
 				"fieldtype": "Check",
 				"label": "Is Down Payment",
-				"insert_after": "emi_details_section",
+				"insert_after": "emi_details_section"
+			},
+			{
+				"fieldname": "emi_date",
+				"fieldtype": "Date",
+				"label": "EMI Start Date",
+				"insert_after": "emi_amount"
+			},
+			{
+				"fieldname": "installment_column_break",
+				"fieldtype": "Column Break",
+				"insert_after": "emi_date"
+			},
+			{
+				"fieldname": "no_of_installment",
+				"fieldtype": "Int",
+				"label": "No Of Installment",
+				"insert_after": "installment_column_break"
+			},
+			{
+				"fieldname": "emi_duration_section",
+				"fieldtype": "Section Break",
+				"label": "EMI Schedule",
+				"insert_after": "closing_date",
+				"depends_on": "eval:doc.sales_type == 'EMI'"
+
+			},
+			{
+				"fieldname": "emi_duration",
+				"fieldtype": "Table",
+				"label": "EMI Schedule",
+				"options":"EMI Duration",
+				"insert_after": "emi_duration_section",
 				"read_only": 1
 			},
 			{
 				"fieldname": "down_payment_paid",
 				"fieldtype": "Check",
 				"label": "Down Payment Paid",
-				"insert_after": "emi_amount",
+				"insert_after": "no_of_installment",
 				"allow_on_submit" : 1 ,
 				"read_only": 1,
+			},
+			{
+				"fieldname": "closing_date",
+				"fieldtype": "Date",
+				"label": "Closing Date",
+				"insert_after": "down_payment_paid",
+				"read_only": 1
 			},
 			{
 				"fieldname": "sales_expense_tab",
