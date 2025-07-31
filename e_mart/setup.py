@@ -180,6 +180,32 @@ def get_item_custom_fields():
 				"label": "Sales Expense Contribution",
 				"insert_after": "commission_value"
 			},
+			{
+				"fieldname": "demo_required",
+				"fieldtype": "Check",
+				"label": "Demo Required",
+				"insert_after": "allow_negative_stock"
+			},
+			{
+				"fieldname": "buyback_item",
+				"fieldtype": "Check",
+				"label": "Buyback Item",
+				"insert_after": "is_stock_item"
+			},
+			{
+				"fieldname": "item_category",
+				"fieldtype": "Link",
+				"label": "Item Category",
+				"options": "Item Category",
+				"insert_after": "item_group"
+			},
+			{
+				"fieldname": "item_subcategory",
+				"fieldtype": "Link",
+				"label": "Item Subcategory",
+				"options": "Item Subcategory",
+				"insert_after": "item_category"
+			},
 		]
 	}
 
@@ -250,7 +276,69 @@ def get_sales_invoice_item_custom_fields():
 				"fieldtype": "Data",
 				"label": "Sales Expense Contribution",
 				"insert_after": "is_demo_reqd"
-			}
+			},
+			{
+				"fieldname": "sales_type",
+				"fieldtype": "Select",
+				"label": "Sales Type",
+				"options": "Cash\nCredit\nEMI",
+				"insert_after": "sales_expense_contribution",
+				"read_only": 1
+			},
+			{
+				"fieldname": "is_emi",
+				"fieldtype": "Check",
+				"label": "Is EMI Item",
+				"insert_after": "item_name",
+				"depends_on": "eval:doc.sales_type == 'EMI'"
+			},
+			{
+				"fieldname": "emi_details_section",
+				"fieldtype": "Section Break",
+				"label": "EMI Details",
+				"insert_after": "base_net_amount",
+				"depends_on": "eval:doc.is_emi"
+			},
+			{
+				"fieldname": "is_down_payment",
+				"fieldtype": "Check",
+				"label": "Is Down Payment",
+				"insert_after": "emi_details_section"
+			},
+			{
+				"fieldname": "down_payment",
+				"fieldtype": "Currency",
+				"label": "Down Payment",
+				"insert_after": "is_down_payment",
+				"depends_on": "eval:doc.is_down_payment"
+			},
+			{
+				"fieldname": "emi_amount",
+				"fieldtype": "Currency",
+				"label": "EMI Amount",
+				"insert_after": "down_payment",
+				"read_only": 1
+			},
+			{
+				"fieldname": "emi_details_column",
+				"fieldtype": "Column Break",
+				"label": " ",
+				"insert_after": "emi_amount"
+			},
+			{
+				"fieldname": "emi_start_date",
+				"fieldtype": "Date",
+				"label": "EMI Start Date",
+				"insert_after": "emi_details_column",
+				"mandatory_depends_on": "eval:doc.is_emi"
+			},
+			{
+				"fieldname": "no_of_installment",
+				"fieldtype": "Int",
+				"label": "No Of Installment",
+				"insert_after": "emi_start_date",
+				"mandatory_depends_on": "eval:doc.is_emi"
+			},
 		]
 	}
 
@@ -416,7 +504,7 @@ def get_sales_invoice_custom_fields():
 				"fieldtype": "Link",
 				"label": "Mode Of Payment",
 				"options": "Mode of Payment",
-				"insert_after": "customer"
+				"insert_after": "customer_name"
 			},
 			{
 				"fieldname": "is_buyback",
@@ -436,8 +524,7 @@ def get_sales_invoice_custom_fields():
 				"label": "Buyback Items",
 				"options": "Buyback Item",
 				"insert_after": "buyback_section",
-				"depends_on": "eval:doc.is_buyback",
-				"mandatory_depends_on": "eval:doc.is_buyback"
+				"depends_on": "eval:doc.is_buyback"
 			},
 			{
 				"fieldname": "buyback_amount_section",
@@ -475,7 +562,8 @@ def get_sales_invoice_custom_fields():
 				"fieldtype": "Currency",
 				"label": "Down Payment Amount",
 				"insert_after": "down_payment",
-				"depends_on": "eval:doc.down_payment"
+				"depends_on": "eval:doc.down_payment",
+				"read_only": 1
 			},
 			{
 				"fieldname": "emi_amount",
@@ -483,6 +571,12 @@ def get_sales_invoice_custom_fields():
 				"label": "EMI AMOUNT",
 				"insert_after": "down_payment_amount",
 				"read_only": 1
+			},
+			{
+				"fieldname": "down_payment",
+				"fieldtype": "Check",
+				"label": "Is Down Payment",
+				"insert_after": "emi_details_section"
 			},
 			{
 				"fieldname": "emi_date",
@@ -516,12 +610,6 @@ def get_sales_invoice_custom_fields():
 				"options":"EMI Duration",
 				"insert_after": "emi_duration_section",
 				"read_only": 1
-			},
-			{
-				"fieldname": "down_payment",
-				"fieldtype": "Check",
-				"label": "Is Down Payment",
-				"insert_after": "emi_details_section"
 			},
 			{
 				"fieldname": "down_payment_paid",
