@@ -1,9 +1,10 @@
 import frappe
-from frappe.utils import flt,add_months,nowdate,get_first_day,get_last_day,add_days
+from frappe.utils import flt,add_months,nowdate,get_first_day,get_last_day,add_days,getdate
 from frappe.model.mapper import get_mapped_doc
 from datetime import datetime
 from frappe.utils import flt
 from frappe.utils import get_url_to_form
+from frappe.utils import get_datetime
 
 
 def on_submit(doc, method=None):
@@ -85,42 +86,11 @@ def update_emi_amount(doc, method):
 	"""
 	Generate the emi amount after deducting the down payment
 	"""
-	down_payment = flt(doc.down_payment_amount)
-	outstanding = flt(doc.outstanding_amount)
-	doc.emi_amount = outstanding - down_payment
-
-def generate_emi_schedule(doc, method):
-	"""
-	Generate EMI Duration table rows based on:
-	- doc.emi_date (Sales Invoice EMI start date)
-	- no_of_installments
-	- emi_amount
-	"""
-	if doc.sales_type != "EMI":
-		return
-	if doc.is_buyback: 
-		return
-
-	if not doc.emi_date:
-		frappe.throw("Please set the EMI Start Date in Sales Invoice.")
-
-	if not doc.no_of_installment:
-		frappe.throw("Please set No of Installments.")
-
-	if not doc.emi_amount:
-		frappe.throw("Please set EMI Amount.")
-
-	doc.set("emi_duration", [])  # Clear existing table
-
-	installment_amount = flt(doc.emi_amount) / int(doc.no_of_installment)
-
-	for i in range(int(doc.no_of_installment)):
-		installment_date = add_months(doc.emi_date, i)
-		doc.append("emi_duration", {
-			"date": installment_date,
-			"amount": installment_amount
-		})		
-
+	for item in doc.items:
+		 down_payment = item.down_payment or 0
+		 amount = item.amount or 0
+		 item.emi_amount = amount - down_payment
+	
 @frappe.whitelist()
 def create_finance_invoice(sales_invoice_name):
 	'''
@@ -158,9 +128,7 @@ def create_finance_invoice(sales_invoice_name):
 
 	return finance_invoice.name
 
-#
 @frappe.whitelist()
-
 def make_down_payment_entry(source_name, target_doc=None):
 	def set_missing_values(source, target):
 		"""
@@ -395,4 +363,121 @@ def calculate_profit_for_commission(doc, method):
 		contribution = flt(item.sales_expense_contribution or 0)
 		profit = total_expense - contribution
 		item.profit_for_commission = profit
+
+def generate_emi_schedule(emi_doc, start_date, total_amount, no_of_installments):
+	"""
+	Adds EMI Schedule rows to the EMI Information document and returns the closing date.
+	"""
+	amount_per_installment = flt(total_amount) / no_of_installments
+	start_date = getdate(start_date)
+	last_date = None
+
+	for i in range(no_of_installments):
+		installment_date = add_months(start_date, i)
+		last_date = installment_date 
+
+		emi_doc.append("emi_schedule", {
+			"no": i + 1,
+			"date": installment_date,
+			"amount": round(amount_per_installment, 2)
+		})
+
+	return last_date
+
+@frappe.whitelist()
+def create_emi_information(doc, method):
+	"""
+	 Creates EMI Information for each item marked as EMI.
+	"""
+	for item in doc.items:
+		if item.is_emi:
+			if not all([item.emi_amount, item.emi_start_date, item.no_of_installment]):
+				frappe.throw(f"Missing EMI details for item {item.item_code}")
+
+			emi_doc = frappe.new_doc("EMI Information")
+			emi_doc.customer = doc.customer
+			emi_doc.item = item.item_code
+			emi_doc.emi_amount = item.emi_amount
+			emi_doc.down_payment = item.down_payment
+			emi_doc.emi_provider = doc.emi_provider
+			emi_doc.emi_start_date = item.emi_start_date
+			emi_doc.no_of_installment = item.no_of_installment
+			emi_doc.sales_invoice = doc.name
+
+			# Generate EMI Schedule and get closing date
+			closing_date = generate_emi_schedule(
+				emi_doc,
+				start_date=item.emi_start_date,
+				total_amount=item.emi_amount,
+				no_of_installments=item.no_of_installment
+			)
+			emi_doc.closing_date = closing_date
+			emi_doc.insert(ignore_permissions=True)
+
+def calculate_total_down_payment(doc, method):
+	"""
+	Calculates the total down payment amount from items and sets it in the Sales Invoice.
+	"""
+	total_down_payment = 0
+
+	for item in doc.items:
+		if item.down_payment:
+			total_down_payment += item.down_payment
+
+	doc.down_payment_amount = total_down_payment
+
+def calculate_total_emi_amount(doc, method):
+	"""
+	Calculates the total emi amount from items and sets it in the Sales Invoice.
+	"""
+	total_emi_amount = 0
+
+	for item in doc.items:
+		if item.emi_amount:
+			total_emi_amount += item.emi_amount
+
+	doc.emi_amount = total_emi_amount
+
+def get_valuation_rate(item_code, warehouse, posting_date, posting_time):
+    """
+    Get the most recent valuation rate from Stock Ledger Entry (SLE).
+    """
+    if not item_code or not warehouse:
+        return 0
+
+    posting_datetime = get_datetime(f"{posting_date} {posting_time}")
+
+    sle = frappe.db.sql("""
+        SELECT valuation_rate
+        FROM `tabStock Ledger Entry`
+        WHERE item_code = %s
+        AND warehouse = %s
+        AND TIMESTAMP(posting_date, posting_time) <= %s
+        AND valuation_rate IS NOT NULL
+        ORDER BY posting_date DESC, posting_time DESC, creation DESC
+        LIMIT 1
+    """, (item_code, warehouse, posting_datetime), as_dict=True)
+
+    return sle[0].valuation_rate if sle else 0
+
+
+def set_valuation_and_gross_profit(doc, method):
+    """
+    Set valuation_rate and gross_profit for each item in Sales Invoice.
+    """
+    for item in doc.items:
+        if not item.item_code or not item.warehouse:
+            continue
+
+        # Fetch valuation rate from SLE
+        valuation_rate = get_valuation_rate(
+            item.item_code,
+            item.warehouse,
+            doc.posting_date,
+            doc.posting_time
+        )
+
+        item.valuation_rate = valuation_rate or 0
+        item.gross_profit = (item.amount or 0) - (valuation_rate or 0) * (item.qty or 0)
+
 

@@ -12,7 +12,7 @@ def update_schema_discount_amount(doc, method):
     if doc.purchase_schema == "item-wise":
         total_schema_discount = 0
         for item in doc.items:
-            total_schema_discount += item.schema_discount_amount or 0
+            total_schema_discount += item.total_schema_discount_amount or 0
 
         doc.schema_discount_amount = total_schema_discount
 
