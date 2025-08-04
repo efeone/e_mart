@@ -133,6 +133,13 @@ def get_purchase_invoice_item_custom_fields():
 				"fieldtype": "Currency",
 				"label": "Schema Discount Amount",
 				"insert_after": "amount"
+			},
+			{
+				"fieldname": "total_schema_discount_amount",
+				"fieldtype": "Currency",
+				"label": "Total Schema Discount Amount",
+				"insert_after": "schema_discount_amount",
+				"read_only": 1
 			}
 		]
 	}
@@ -339,6 +346,20 @@ def get_sales_invoice_item_custom_fields():
 				"insert_after": "emi_start_date",
 				"mandatory_depends_on": "eval:doc.is_emi"
 			},
+			{
+				"fieldname": "valuation_rate",
+				"fieldtype": "Currency",
+				"label": "Valuation Rate",
+				"insert_after": "cess_non_advol_amount",
+				"read_only": 1
+			},
+			{
+				"fieldname": "gross_profit",
+				"fieldtype": "Currency",
+				"label": "Gross Profit",
+				"insert_after": "valuation_rate",
+				"read_only": 1
+			}
 		]
 	}
 
@@ -524,7 +545,8 @@ def get_sales_invoice_custom_fields():
 				"label": "Buyback Items",
 				"options": "Buyback Item",
 				"insert_after": "buyback_section",
-				"depends_on": "eval:doc.is_buyback"
+				"depends_on": "eval:doc.is_buyback",
+				"mandatory_depends_on": "eval:doc.is_buyback"
 			},
 			{
 				"fieldname": "buyback_amount_section",
@@ -569,7 +591,7 @@ def get_sales_invoice_custom_fields():
 				"fieldname": "emi_amount",
 				"fieldtype": "Currency",
 				"label": "EMI AMOUNT",
-				"insert_after": "down_payment_amount",
+				"insert_after": "down_payment_paid",
 				"read_only": 1
 			},
 			{
@@ -579,52 +601,12 @@ def get_sales_invoice_custom_fields():
 				"insert_after": "emi_details_section"
 			},
 			{
-				"fieldname": "emi_date",
-				"fieldtype": "Date",
-				"label": "EMI Start Date",
-				"insert_after": "emi_amount"
-			},
-			{
-				"fieldname": "installment_column_break",
-				"fieldtype": "Column Break",
-				"insert_after": "emi_date"
-			},
-			{
-				"fieldname": "no_of_installment",
-				"fieldtype": "Int",
-				"label": "No Of Installment",
-				"insert_after": "installment_column_break"
-			},
-			{
-				"fieldname": "emi_duration_section",
-				"fieldtype": "Section Break",
-				"label": "EMI Schedule",
-				"insert_after": "closing_date",
-				"depends_on": "eval:doc.sales_type == 'EMI'"
-
-			},
-			{
-				"fieldname": "emi_duration",
-				"fieldtype": "Table",
-				"label": "EMI Schedule",
-				"options":"EMI Duration",
-				"insert_after": "emi_duration_section",
-				"read_only": 1
-			},
-			{
 				"fieldname": "down_payment_paid",
 				"fieldtype": "Check",
 				"label": "Down Payment Paid",
-				"insert_after": "no_of_installment",
+				"insert_after": "down_payment_amount",
 				"allow_on_submit" : 1 ,
 				"read_only": 1,
-			},
-			{
-				"fieldname": "closing_date",
-				"fieldtype": "Date",
-				"label": "Closing Date",
-				"insert_after": "down_payment_paid",
-				"read_only": 1
 			},
 			{
 				"fieldname": "sales_expense_tab",

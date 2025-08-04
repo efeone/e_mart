@@ -18,8 +18,13 @@ frappe.ui.form.on('Purchase Invoice', {
 });
 
 frappe.ui.form.on('Purchase Invoice Item', {
-	schema_discount_amount: function(frm) {
+	schema_discount_amount: function(frm, cdt, cdn) {
+		calculate_total_schema_discount(cdt, cdn);
 		update_schema_discount_amount_total(frm);
+	},
+	qty: function(frm, cdt, cdn) {
+		 calculate_total_schema_discount(cdt, cdn);
+		 update_schema_discount_amount_total(frm);
 	}
 });
 
@@ -29,9 +34,21 @@ frappe.ui.form.on('Purchase Invoice Item', {
 function update_schema_discount_amount_total(frm) {
 	let total = 0;
 	(frm.doc.items || []).forEach(row => {
-		if (row.schema_discount_amount) {
-			total += row.schema_discount_amount;
+		if (row.total_schema_discount_amount) {
+			total += row.total_schema_discount_amount;
 		}
 	});
 	frm.set_value('schema_discount_amount', total);
 }
+
+/**
+ * function to calculate the total schema discount amount in items table
+ */
+function calculate_total_schema_discount(cdt, cdn) {
+	let row = locals[cdt][cdn];
+	if (row.qty && row.schema_discount_amount) {
+		row.total_schema_discount = row.qty * row.schema_discount_amount;
+		frappe.model.set_value(cdt, cdn, 'total_schema_discount_amount', row.total_schema_discount);
+	}
+}
+		

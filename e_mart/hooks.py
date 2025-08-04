@@ -159,16 +159,19 @@ doc_events = {
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_buyback_fields",
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_total_expense",
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_profit_for_commission",
-			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.generate_emi_schedule",
-			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount"
+			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
+			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_total_down_payment",
+			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_total_emi_amount"
 		],
 		"on_submit": [
 			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.on_submit",
 			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.map_commission_to_sales_team",
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.create_emi_information"
 
 		],
 		"before_save":[
-			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.map_commission_to_sales_team"
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.map_commission_to_sales_team",
+			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.set_valuation_and_gross_profit"
 		],
 	},
 	"Payment Entry" : {
