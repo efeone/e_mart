@@ -439,45 +439,45 @@ def calculate_total_emi_amount(doc, method):
 	doc.emi_amount = total_emi_amount
 
 def get_valuation_rate(item_code, warehouse, posting_date, posting_time):
-    """
-    Get the most recent valuation rate from Stock Ledger Entry (SLE).
-    """
-    if not item_code or not warehouse:
-        return 0
+	"""
+	Get the most recent valuation rate from Stock Ledger Entry (SLE).
+	"""
+	if not item_code or not warehouse:
+		return 0
 
-    posting_datetime = get_datetime(f"{posting_date} {posting_time}")
+	posting_datetime = get_datetime(f"{posting_date} {posting_time}")
 
-    sle = frappe.db.sql("""
-        SELECT valuation_rate
-        FROM `tabStock Ledger Entry`
-        WHERE item_code = %s
-        AND warehouse = %s
-        AND TIMESTAMP(posting_date, posting_time) <= %s
-        AND valuation_rate IS NOT NULL
-        ORDER BY posting_date DESC, posting_time DESC, creation DESC
-        LIMIT 1
-    """, (item_code, warehouse, posting_datetime), as_dict=True)
+	sle = frappe.db.sql("""
+		SELECT valuation_rate
+		FROM `tabStock Ledger Entry`
+		WHERE item_code = %s
+		AND warehouse = %s
+		AND TIMESTAMP(posting_date, posting_time) <= %s
+		AND valuation_rate IS NOT NULL
+		ORDER BY posting_date DESC, posting_time DESC, creation DESC
+		LIMIT 1
+	""", (item_code, warehouse, posting_datetime), as_dict=True)
 
-    return sle[0].valuation_rate if sle else 0
+	return sle[0].valuation_rate if sle else 0
 
 
 def set_valuation_and_gross_profit(doc, method):
-    """
-    Set valuation_rate and gross_profit for each item in Sales Invoice.
-    """
-    for item in doc.items:
-        if not item.item_code or not item.warehouse:
-            continue
+	"""
+	Set valuation_rate and gross_profit for each item in Sales Invoice.
+	"""
+	for item in doc.items:
+		if not item.item_code or not item.warehouse:
+			continue
 
-        # Fetch valuation rate from SLE
-        valuation_rate = get_valuation_rate(
-            item.item_code,
-            item.warehouse,
-            doc.posting_date,
-            doc.posting_time
-        )
+		# Fetch valuation rate from SLE
+		valuation_rate = get_valuation_rate(
+			item.item_code,
+			item.warehouse,
+			doc.posting_date,
+			doc.posting_time
+		)
 
-        item.valuation_rate = valuation_rate or 0
-        item.gross_profit = (item.amount or 0) - (valuation_rate or 0) * (item.qty or 0)
+		item.valuation_rate = valuation_rate or 0
+		item.gross_profit = (item.amount or 0) - (valuation_rate or 0) * (item.qty or 0)
 
 

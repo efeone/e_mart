@@ -7,19 +7,19 @@ frappe.ui.form.on('Sales Invoice', {
 			update_total_buyback_amount(frm);
 			update_rounded_total(frm);
 		});
-        frm.set_query('item', 'buyback_items', function(doc, cdt, cdn) {
-            return {
-                filters: {
-                    buyback_item: 1
-                }
-            };
-        });
+		frm.set_query('item', 'buyback_items', function(doc, cdt, cdn) {
+			return {
+				filters: {
+					buyback_item: 1
+				}
+			};
+		});
 		set_finance_filter(frm);
 		attach_sales_expense_grid_events(frm);
 		calculate_total_expense(frm);
-        calculate_total_down_payment(frm);
-        update_down_payment_checkbox(frm);
-        calculate_total_emi_amount(frm);
+		calculate_total_down_payment(frm);
+		update_down_payment_checkbox(frm);
+		calculate_total_emi_amount(frm);
 	},
 	refresh: function (frm) {
 		if (frm.doc.docstatus === 0) {
@@ -40,23 +40,23 @@ frappe.ui.form.on('Sales Invoice', {
 					}
 				});
 			});
-            if (frm.doc.docstatus === 1 && frm.doc.down_payment && frm.doc.down_payment_amount && frm.doc.down_payment_paid == 0 ) {
-                frm.add_custom_button(__('Down Payment'), function() {
-                    frappe.model.open_mapped_doc({
-                        method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.make_down_payment_entry",
-                        source_name: frm.doc.name
-                    });
-                }, __('Create'));
-            }
-        }
-	    calculate_total_expense(frm);
-        calculate_total_down_payment(frm);
-        update_down_payment_checkbox(frm);
-        calculate_total_emi_amount(frm);
+			if (frm.doc.docstatus === 1 && frm.doc.down_payment && frm.doc.down_payment_amount && frm.doc.down_payment_paid == 0 ) {
+				frm.add_custom_button(__('Down Payment'), function() {
+					frappe.model.open_mapped_doc({
+						method: "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.make_down_payment_entry",
+						source_name: frm.doc.name
+					});
+				}, __('Create'));
+			}
+		}
+		calculate_total_expense(frm);
+		calculate_total_down_payment(frm);
+		update_down_payment_checkbox(frm);
+		calculate_total_emi_amount(frm);
 	},
 	sales_type(frm) {
 		set_finance_filter(frm);
-        sync_sales_type_to_items(frm);
+		sync_sales_type_to_items(frm);
 	},
 	total: function(frm) {
 		update_outstanding_amount(frm);
@@ -78,20 +78,20 @@ frappe.ui.form.on('Sales Invoice', {
 	},
 	validate(frm) {
 		calculate_total_expense(frm);
-        update_profit_for_commission(frm);
-        calculate_total_down_payment(frm);
-        calculate_total_emi_amount(frm);
+		update_profit_for_commission(frm);
+		calculate_total_down_payment(frm);
+		calculate_total_emi_amount(frm);
 	},
 	calculate_totals(frm) {
 		setTimeout(() => {
 			update_outstanding_amount(frm);
 			update_rounded_total(frm);
 			calculate_total_expense(frm);
-            calculate_total_down_payment(frm);
-            calculate_total_emi_amount(frm);
+			calculate_total_down_payment(frm);
+			calculate_total_emi_amount(frm);
 		}, 200);
 	},
-    total_expense(frm) {
+	total_expense(frm) {
 		update_profit_for_commission(frm);
 	}
 });
@@ -103,74 +103,74 @@ frappe.ui.form.on('Buyback Item', {
 	rate(frm, cdt, cdn) {
 		calculate_row_amount(frm, cdt, cdn);
 	},
-    buyback_items_add(frm) {
-        update_total_buyback_amount(frm);
-        update_grand_total(frm);
-        update_rounded_total(frm);
-        update_outstanding_amount(frm)
-    },
+	buyback_items_add(frm) {
+		update_total_buyback_amount(frm);
+		update_grand_total(frm);
+		update_rounded_total(frm);
+		update_outstanding_amount(frm)
+	},
 	buyback_items_remove(frm) {
 		update_total_buyback_amount(frm);
-        update_grand_total(frm);
-        update_rounded_total(frm);
-        update_outstanding_amount(frm)
+		update_grand_total(frm);
+		update_rounded_total(frm);
+		update_outstanding_amount(frm)
 	}
 });
 // Sales Invoice Items child table
 frappe.ui.form.on('Sales Invoice Item', {
 	qty(frm, cdt, cdn) {
 		frm.trigger("calculate_totals");
-        update_emi_amount(frm, cdt, cdn);
-        set_valuation_and_gross_profit(frm, cdt, cdn);
+		update_emi_amount(frm, cdt, cdn);
+		set_valuation_and_gross_profit(frm, cdt, cdn);
 	},
 	rate(frm, cdt, cdn) {
 		frm.trigger("calculate_totals");
-        update_emi_amount(frm, cdt, cdn);
-        set_valuation_and_gross_profit(frm, cdt, cdn);
+		update_emi_amount(frm, cdt, cdn);
+		set_valuation_and_gross_profit(frm, cdt, cdn);
 	},
 	amount(frm, cdt, cdn) {
 		frm.trigger("calculate_totals");
 		calculate_total_expense(frm);
-        update_emi_amount(frm, cdt, cdn);
+		update_emi_amount(frm, cdt, cdn);
 	},
-    down_payment(frm, cdt, cdn) {
-        update_emi_amount(frm, cdt, cdn);
-        calculate_total_down_payment(frm);
-    },
-    is_down_payment(frm, cdt, cdn) {
+	down_payment(frm, cdt, cdn) {
+		update_emi_amount(frm, cdt, cdn);
+		calculate_total_down_payment(frm);
+	},
+	is_down_payment(frm, cdt, cdn) {
 		update_down_payment_checkbox(frm);
 	},
-    emi_amount(frm, cdt, cdn) {
-        calculate_total_emi_amount(frm);
-    },
+	emi_amount(frm, cdt, cdn) {
+		calculate_total_emi_amount(frm);
+	},
 	items_add(frm) {
 		frm.trigger("calculate_totals");
-        update_down_payment_checkbox(frm);
+		update_down_payment_checkbox(frm);
 	},
 	items_remove(frm) {
 		frm.trigger("calculate_totals");
-        calculate_total_down_payment(frm);
-        update_down_payment_checkbox(frm);
-        calculate_total_emi_amount(frm);
+		calculate_total_down_payment(frm);
+		update_down_payment_checkbox(frm);
+		calculate_total_emi_amount(frm);
 	},
 	item_code(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-        if (row.item_code) {
-            frappe.db.get_value("Item", row.item_code, "sales_expense_contribution")
-            .then(r => {
-                if (r.message) {
-                    frappe.model.set_value(cdt, cdn, "sales_expense_contribution", r.message.sales_expense_contribution);
-                    update_profit_for_commission(frm);
-                    }
-                });
-            }
-            set_valuation_and_gross_profit(frm, cdt, cdn);
-    },
+		let row = locals[cdt][cdn];
+		if (row.item_code) {
+			frappe.db.get_value("Item", row.item_code, "sales_expense_contribution")
+			.then(r => {
+				if (r.message) {
+					frappe.model.set_value(cdt, cdn, "sales_expense_contribution", r.message.sales_expense_contribution);
+					update_profit_for_commission(frm);
+					}
+				});
+			}
+			set_valuation_and_gross_profit(frm, cdt, cdn);
+	},
 	sales_expense_contribution(frm, cdt, cdn) {
-        update_profit_for_commission(frm);
-    },
-    form_render: function(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
+		update_profit_for_commission(frm);
+	},
+	form_render: function(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
 		row.sales_type = frm.doc.sales_type;
 		refresh_field("items");
 	}
@@ -294,8 +294,8 @@ function set_finance_filter(frm) {
  * and updates the emi_amount field immediately.
  */
 function update_emi_amount(frm, cdt, cdn) {
-    const row = locals[cdt][cdn];
-    if (frm.doc.docstatus !== 0) {
+	const row = locals[cdt][cdn];
+	if (frm.doc.docstatus !== 0) {
 		return;
 	}
 	const down_payment = flt(row.down_payment || 0);
@@ -428,30 +428,30 @@ function calculate_total_emi_amount(frm) {
  * and calculates gross profit per item. 
  */
 function set_valuation_and_gross_profit(frm, cdt, cdn) {
-    const row = locals[cdt][cdn];
+	const row = locals[cdt][cdn];
 
-    if (row.item_code && row.warehouse) {
-        frappe.call({
-            method: 'frappe.client.get_value',
-            args: {
-                doctype: 'Bin',
-                filters: {
-                    item_code: row.item_code,
-                    warehouse: row.warehouse
-                },
-                fieldname: ['valuation_rate']
-            },
-            callback: function(r) {
-                if (r.message) {
-                    const valuation_rate = flt(r.message.valuation_rate);
-                    frappe.model.set_value(cdt, cdn, 'valuation_rate', valuation_rate);
+	if (row.item_code && row.warehouse) {
+		frappe.call({
+			method: 'frappe.client.get_value',
+			args: {
+				doctype: 'Bin',
+				filters: {
+					item_code: row.item_code,
+					warehouse: row.warehouse
+				},
+				fieldname: ['valuation_rate']
+			},
+			callback: function(r) {
+				if (r.message) {
+					const valuation_rate = flt(r.message.valuation_rate);
+					frappe.model.set_value(cdt, cdn, 'valuation_rate', valuation_rate);
 
-                    if (row.rate) {
-                        const gross_profit = (row.rate - valuation_rate) * row.qty;
-                        frappe.model.set_value(cdt, cdn, 'gross_profit', gross_profit);
-                    }
-                }
-            }
-        });
-    }
+					if (row.rate) {
+						const gross_profit = (row.rate - valuation_rate) * row.qty;
+						frappe.model.set_value(cdt, cdn, 'gross_profit', gross_profit);
+					}
+				}
+			}
+		});
+	}
 }
