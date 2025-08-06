@@ -1,11 +1,13 @@
 import frappe
+import json
+from frappe import _
 from frappe.utils import flt,add_months,nowdate,get_first_day,get_last_day,add_days,getdate
 from frappe.model.mapper import get_mapped_doc
 from datetime import datetime
 from frappe.utils import flt
 from frappe.utils import get_url_to_form
 from frappe.utils import get_datetime
-
+from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
 def on_submit(doc, method=None):
 	create_scrap_stock_entry(doc, method)
@@ -480,4 +482,35 @@ def set_valuation_and_gross_profit(doc, method):
 		item.valuation_rate = valuation_rate or 0
 		item.gross_profit = (item.amount or 0) - (valuation_rate or 0) * (item.qty or 0)
 
+@frappe.whitelist()
+def make_payment_entry(sales_invoice, payments):
+	'''
+		Create payment entries from sales invoice
+	'''
+	if isinstance(payments, str):
+		payments = json.loads(payments)
 
+	created_entries = []
+
+	for row in payments:
+		if not row.get("mode_of_payment") or not row.get("amount"):
+			continue
+
+		pe = get_payment_entry("Sales Invoice", sales_invoice)
+		pe.mode_of_payment = row.get("mode_of_payment")
+		pe.paid_amount = row.get("amount")
+		pe.received_amount = row.get("amount")
+		pe.reference_no = row.get("reference_no")
+		pe.reference_date = row.get("reference_date")
+
+		for ref in pe.references:
+			ref.allocated_amount = row.get("amount")
+
+		pe.insert(ignore_permissions=True)
+		pe.submit()
+		created_entries.append(pe.name)
+
+	if not created_entries:
+		frappe.throw("No valid payments found.")
+
+	return ", ".join(created_entries)

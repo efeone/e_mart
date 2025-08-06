@@ -22,6 +22,14 @@ frappe.ui.form.on('Sales Invoice', {
 		calculate_total_emi_amount(frm);
 	},
 	refresh: function (frm) {
+		setTimeout(() => {
+			frm.remove_custom_button('Payment', 'Create');
+			if (frm.doc.docstatus === 1 && flt(frm.doc.outstanding_amount) > 0) {
+				frm.add_custom_button(__('Payment'), function() {
+					show_payment_popup(frm);
+				}, __('Create'));
+			}
+		}, 100);
 		if (frm.doc.docstatus === 0) {
 			update_outstanding_amount(frm);
 			update_rounded_total(frm);
@@ -454,4 +462,138 @@ function set_valuation_and_gross_profit(frm, cdt, cdn) {
 			}
 		});
 	}
+}
+/**
+ * Opens a popup to record multiple payments for the Sales Invoice.
+ * Dynamically updates balance and creates a Payment Entry on submission.
+ */
+function show_payment_popup(frm) {
+	let outstanding_amount = frm.doc.outstanding_amount || 0;
+
+	const dialog = new frappe.ui.Dialog({
+		title: 'Record Payment',
+		fields: [
+			{
+				fieldtype: 'HTML',
+				fieldname: 'amount_summary_display',
+				options: `
+					<div style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 10px;">
+						<div id="outstanding_amount_box" style="font-size: 16px; font-weight: bold;">
+							Outstanding Amount: ₹${outstanding_amount.toFixed(2)}
+						</div>
+						<div id="balance_to_pay_display" style="font-size: 16px; font-weight: bold;">
+							Balance to Pay: ₹${outstanding_amount.toFixed(2)}
+						</div>
+					</div>`
+			},
+			{
+				fieldname: 'payments',
+				fieldtype: 'Table',
+				label: 'Payments',
+				cannot_add_rows: false,
+				in_place_edit: true,
+				data: [],
+				get_data: () => {
+					return dialog.get_value('payments') || [];
+				},
+				fields: [
+					{
+						fieldname: 'mode_of_payment',
+						fieldtype: 'Link',
+						label: 'Mode of Payment',
+						options: 'Mode of Payment',
+						in_list_view: 1,
+						reqd: 1
+					},
+					{
+						fieldname: 'reference_no',
+						fieldtype: 'Data',
+						label: 'Reference No',
+						in_list_view: 1
+					},
+					{
+						fieldname: 'reference_date',
+						fieldtype: 'Date',
+						label: 'Reference Date',
+						in_list_view: 1
+					},
+					{
+						fieldname: 'amount',
+						fieldtype: 'Currency',
+						label: 'Amount',
+						in_list_view: 1,
+						reqd: 1
+					}
+				]
+			}
+		],
+		primary_action_label: 'Submit Payment',
+		primary_action(values) {
+			const payments = values.payments || [];
+			if (!payments.length) {
+				frappe.msgprint(__('Please add at least one payment'));
+				return;
+			}
+
+			frappe.call({
+				method: 'e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.make_payment_entry',
+				args: {
+					sales_invoice: frm.doc.name,
+					payments: payments
+				},
+				callback: function (r) {
+					if (r.message) {
+						frappe.msgprint('Payment Entry Created: ' + r.message);
+						dialog.hide();
+						frm.reload_doc();
+					}
+				}
+			});
+		}
+	});
+
+	dialog.show();
+	const update_balance = () => {
+		const data = dialog.get_value('payments') || [];
+		const total_paid = data.reduce((acc, row) => acc + (parseFloat(row.amount) || 0), 0);
+		const balance = outstanding_amount - total_paid;
+
+		dialog.fields_dict.amount_summary_display.$wrapper
+			.find('#balance_to_pay_display')
+			.html(`Balance to Pay: ₹${balance.toFixed(2)}`);
+	};
+	frappe.realtime.on('editable_table_changed', () => {
+		update_balance();
+	});
+
+	dialog.fields_dict.payments.grid.wrapper.on('input', function () {
+		update_balance();
+	});
+
+	dialog.fields_dict.payments.grid.wrapper.on('click', '.grid-add-row', () => {
+		setTimeout(() => {
+			const grid = dialog.fields_dict.payments.grid;
+			const all_rows = grid.get_data();
+
+			let paid_so_far = 0;
+			all_rows.forEach(row => {
+				paid_so_far += flt(row.amount || 0);
+			});
+
+			const remaining = flt(frm.doc.outstanding_amount) - paid_so_far;
+
+			const last_row = grid.grid_rows[grid.grid_rows.length - 1];
+			if (last_row && remaining > 0) {
+				frappe.model.set_value(
+					last_row.doc.doctype,
+					last_row.doc.name,
+					'amount',
+					remaining
+				);
+			}
+
+			update_balance();
+		}, 100);
+	});
+	update_balance();
 }
