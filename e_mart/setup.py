@@ -227,6 +227,12 @@ def get_customer_custom_fields():
 				"fieldtype": "Check",
 				"label": "Is Provider",
 				"insert_after": "customer_group"
+			},
+			{
+				"fieldname": "secondary_contact",
+				"fieldtype": "Phone",
+				"label": "Customer Secondary Contact",
+				"insert_after": "email_id"
 			}
 		]
 	}
@@ -505,6 +511,13 @@ def get_property_setters():
 			"property": "hidden",
 			"value": 1
 		},
+		{
+			"doctype_or_field": "DocType",
+			"doc_type": "Customer",
+			"property": "search_fields",
+			"property_type": "Data",
+			"value": "customer_group,territory, mobile_no,primary_address,secondary_contact"
+		}
 
 	]
 def get_sales_invoice_custom_fields():
