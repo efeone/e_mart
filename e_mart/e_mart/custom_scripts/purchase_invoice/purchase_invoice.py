@@ -23,6 +23,8 @@ def create_debit_note_log(purchase_invoice):
 	'''
 		Creates a Debit Note Log from a submitted Purchase Invoice
 	'''
+	if not purchase_invoice.schema_discount_amount or purchase_invoice.schema_discount_amount == 0:
+		return
 	exists = frappe.db.exists("Debit Note Log", {"purchase_invoice": purchase_invoice.name})
 	if exists:
 		frappe.msgprint(f"Debit Note Log already exists for {purchase_invoice.name}")
