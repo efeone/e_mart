@@ -30,10 +30,6 @@ frappe.ui.form.on('Sales Invoice', {
 				}, __('Create'));
 			}
 		}, 100);
-		if (frm.doc.docstatus === 0) {
-			update_outstanding_amount(frm);
-			update_rounded_total(frm);
-		}
 		if (!frm.is_new() && frm.doc.sales_type === "EMI") {
 			frm.add_custom_button(__('Create Finance Invoice'), function () {
 				frappe.call({
