@@ -231,7 +231,6 @@ function update_outstanding_amount(frm) {
 		}
 		frm.set_value('outstanding_amount', Math.max(outstanding, 0));
 		update_grand_total(frm); 
-		update_emi_amount(frm);
 	}
 }
 
