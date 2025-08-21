@@ -161,7 +161,8 @@ doc_events = {
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_profit_for_commission",
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.update_emi_amount",
 			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_total_down_payment",
-			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_total_emi_amount"
+			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.calculate_total_emi_amount",
+			  "e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.validate_mrp_and_rate"
 		],
 		"on_submit": [
 			"e_mart.e_mart.custom_scripts.sales_invoice.sales_invoice.on_submit",
