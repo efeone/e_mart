@@ -13,7 +13,7 @@ frappe.ui.form.on('Sales Invoice', {
 				}
 			};
 		});
-		set_finance_filter(frm);+
+		set_finance_filter(frm);
 		attach_sales_expense_grid_events(frm);
 		calculate_total_expense(frm);
 		calculate_total_down_payment(frm);
