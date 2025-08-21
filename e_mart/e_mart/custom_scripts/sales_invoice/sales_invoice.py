@@ -15,40 +15,6 @@ def on_submit(doc, method=None):
 	create_demo_tasks_on_submit(doc, method)
 	update_monthly_commission_log(doc, method)
 
-def validate_buyback_fields(doc, method=None):
-	"""
-	Triggered on validation of Sales Invoice.
-
-	1. Calculates amount for each Buyback Item row.
-	2. Sums up all row amounts into buyback_amount.
-	3. Adjusts the outstanding_amount, rounded total and grand total if is_buyback check box is checked
-	"""
-
-	total = 0
-
-	# 1. Calculate amount per row
-	if doc.buyback_items:
-		for row in doc.buyback_items:
-			row.amount = (row.qty or 0) * (row.rate or 0)
-			total += row.amount
-
-	# 2. Set total buyback amount
-	doc.buyback_amount = total
-
-	# 3.Calculate outstanding amount
-	grand_total = (doc.total or 0) + (doc.total_taxes_and_charges or 0)
-	if doc.is_buyback and doc.buyback_amount:
-		grand_total -= doc.buyback_amount
-	doc.outstanding_amount = round(grand_total)
-
-	# 4. Set rounded_total and Grand Total
-	grand_total = (doc.total or 0) + (doc.total_taxes_and_charges or 0)
-	if doc.is_buyback and doc.buyback_amount:
-		grand_total -= doc.buyback_amount
-	doc.grand_total = grand_total
-	doc.outstanding_amount = round(grand_total)
-	doc.rounded_total = round(grand_total)
-
 def create_scrap_stock_entry(doc, method):
 	"""
 	On submission of Sales Invoice:
@@ -514,3 +480,30 @@ def make_payment_entry(sales_invoice, payments):
 		frappe.throw("No valid payments found.")
 
 	return ", ".join(created_entries)
+
+def validate_mrp_and_rate(doc, method):
+	"""
+	Validate that the rate of each item in the Sales Invoice does not exceed its MRP.
+	"""
+	for row in doc.items:
+		if row.item_code and row.rate:
+			mrp = frappe.db.get_value("Item", row.item_code, "mrp")
+			if mrp and row.rate > mrp:
+				frappe.throw(
+					_("Rate of item {0} ({1}) cannot be greater than its MRP ({2})")
+					.format(row.item_code, row.rate, mrp)
+				)
+
+def validate_buyback_fields(doc, method=None):
+	"""
+	Adjust Sales Invoice totals for buyback.
+	"""
+	base_total = flt(doc.grand_total or 0)
+	adjusted_total = base_total
+
+	if doc.is_buyback:
+		adjusted_total -= flt(doc.buyback_amount or 0)
+
+	doc.grand_total = adjusted_total
+	doc.rounded_total = round(adjusted_total)
+	doc.outstanding_amount = max(adjusted_total - flt(doc.total_advance or 0), 0)
