@@ -77,10 +77,11 @@ doctype_js = {
 # ----------
 
 # add methods and filters to jinja environment
-# jinja = {
-# 	"methods": "e_mart.utils.jinja_methods",
-# 	"filters": "e_mart.utils.jinja_filters"
-# }
+jinja = {
+	"methods": [
+		"e_mart.e_mart.utils.generate_barcodes"
+	]
+}
 
 # Installation
 # ------------
@@ -177,6 +178,9 @@ doc_events = {
 	},
 	"Payment Entry" : {
 		"on_submit" : "e_mart.e_mart.custom_scripts.payment_entry.payment_entry.update_down_payment_status"
+	},
+	"Item" : {
+		"before_insert" : "e_mart.e_mart.custom_scripts.item.item.before_insert"
 	}
 	
 }
