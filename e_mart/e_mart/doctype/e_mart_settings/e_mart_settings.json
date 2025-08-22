@@ -19,7 +19,9 @@
   "task_type",
   "column_break_rutn",
   "minimal_duration",
-  "escalation_duration"
+  "escalation_duration",
+  "barcode_series_tab",
+  "barcode_series"
  ],
  "fields": [
   {
@@ -97,13 +99,23 @@
    "fieldtype": "Link",
    "label": "Additional Salary Component",
    "options": "Salary Component"
+  },
+  {
+   "fieldname": "barcode_series_tab",
+   "fieldtype": "Tab Break",
+   "label": "Barcode Series"
+  },
+  {
+   "fieldname": "barcode_series",
+   "fieldtype": "Data",
+   "label": "Current series"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-23 12:40:56.440831",
+ "modified": "2025-08-21 15:12:42.811888",
  "modified_by": "Administrator",
  "module": "E Mart",
  "name": "E-mart Settings",
