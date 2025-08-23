@@ -15,39 +15,14 @@ frappe.ui.form.on('Purchase Invoice', {
 			}, 150);
 		});
 	},
-	//clears taxes and recalculates totals when Purchase Category is set to "Special"
 	purchase_category: function(frm) {
 		if (frm.doc.purchase_category === 'Special') {
-			frm.set_value('taxes_and_charges', null);
-			
-			frm.clear_table('taxes');
-			frm.refresh_field('taxes');
-			
-			frm.doc.total_taxes_and_charges = 0;
-			frm.doc.taxes_and_charges_added = 0;
-			frm.doc.grand_total = frm.doc.net_total || 0;
-			frm.doc.rounded_total = Math.round(frm.doc.grand_total || 0);
-			frm.doc.outstanding_amount = frm.doc.rounded_total || 0;
-			
-			frm.refresh_field('total_taxes_and_charges');
-			frm.refresh_field('grand_total');
-			frm.refresh_field('rounded_total');
+			clear_special_taxes(frm);
 		}
 	},
 	validate: function(frm) {
 		if (frm.doc.purchase_category === 'Special') {
-			frm.set_value('taxes_and_charges', null);
-			frm.clear_table('taxes');
-			frm.refresh_field('taxes');
-
-			frm.doc.total_taxes_and_charges = 0;
-			frm.doc.taxes_and_charges_added = 0;
-			frm.doc.grand_total = frm.doc.net_total || 0;
-			frm.doc.rounded_total = Math.round(frm.doc.grand_total || 0);
-
-			frm.refresh_field('total_taxes_and_charges');
-			frm.refresh_field('grand_total');
-			frm.refresh_field('rounded_total');
+			clear_special_taxes(frm);
 		}
 	}
 });
@@ -85,4 +60,24 @@ function calculate_total_schema_discount(cdt, cdn) {
 		row.total_schema_discount = row.qty * row.schema_discount_amount;
 		frappe.model.set_value(cdt, cdn, 'total_schema_discount_amount', row.total_schema_discount);
 	}
+}
+
+/**
+ * Clears taxes and recalculates total when purchase category is set to 'Special'
+ */
+function clear_special_taxes(frm) {
+	frm.set_value('taxes_and_charges', null);
+	frm.clear_table('taxes');
+	frm.refresh_field('taxes');
+
+	frm.doc.total_taxes_and_charges = 0;
+	frm.doc.taxes_and_charges_added = 0;
+	frm.doc.grand_total = frm.doc.net_total || 0;
+	frm.doc.rounded_total = Math.round(frm.doc.grand_total || 0);
+	frm.doc.outstanding_amount = frm.doc.rounded_total || 0;
+
+	frm.refresh_field('total_taxes_and_charges');
+	frm.refresh_field('grand_total');
+	frm.refresh_field('rounded_total');
+	frm.refresh_field('outstanding_amount');
 }
