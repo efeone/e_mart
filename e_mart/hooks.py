@@ -45,7 +45,9 @@ app_include_js = "/assets/e_mart/js/sales_invoice.js"
 # include js in doctype views
 doctype_js = {
 	"Purchase Invoice" : "e_mart/custom_scripts/purchase_invoice/purchase_invoice.js",
-	"Sales Invoice" : "e_mart/custom_scripts/sales_invoice/sales_invoice.js"
+	"Sales Invoice" : "e_mart/custom_scripts/sales_invoice/sales_invoice.js",
+	"Purchase Order": "e_mart/custom_scripts/purchase_order/purchase_order.js",
+	"Purchase Receipt": "e_mart/custom_scripts/purchase_receipt/purchase_receipt.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
