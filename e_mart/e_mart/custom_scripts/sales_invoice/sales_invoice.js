@@ -76,14 +76,14 @@ frappe.ui.form.on('Sales Invoice', {
 		update_profit_for_commission(frm);
 		calculate_total_down_payment(frm);
 		calculate_total_emi_amount(frm);
-        update_grand_total(frm);
+		update_grand_total(frm);
 	},
 	calculate_totals(frm) {
 		setTimeout(() => {
 			calculate_total_expense(frm);
 			calculate_total_down_payment(frm);
 			calculate_total_emi_amount(frm);
-            update_grand_total(frm);
+			update_grand_total(frm);
 		}, 200);
 	},
 	total_expense(frm) {
@@ -98,16 +98,16 @@ frappe.ui.form.on('Buyback Item', {
 	rate(frm, cdt, cdn) {
 		calculate_row_amount(frm, cdt, cdn);
 	},
-    amount(frm, cdt, cdn) {
-        update_total_buyback_amount(frm);
-    },
+	amount(frm, cdt, cdn) {
+		update_total_buyback_amount(frm);
+	},
 	buyback_items_add(frm) {
 		update_total_buyback_amount(frm);
-        update_grand_total(frm);
+		update_grand_total(frm);
 	},
 	buyback_items_remove(frm) {
 		update_total_buyback_amount(frm);
-        update_grand_total(frm);
+		update_grand_total(frm);
 	}
 });
 // Sales Invoice Items child table
@@ -118,22 +118,22 @@ frappe.ui.form.on('Sales Invoice Item', {
 		set_valuation_and_gross_profit(frm, cdt, cdn);
 	},
 	rate(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-        if (row.item_code && row.rate) {
-            frappe.db.get_value("Item", row.item_code, "mrp")
-                .then(r => {
-                    if (r.message && r.message.mrp) {
-                        let mrp = flt(r.message.mrp);
-                        if (flt(row.rate) > mrp) {
-                            frappe.msgprint({ 
-                                message: __('Rate cannot be greater than MRP ({0})', [mrp]),
-                                indicator: 'red'
-                            });
-                            frappe.model.set_value(cdt, cdn, "rate", mrp);
-                        }
-                    }
-                });
-        }
+		let row = locals[cdt][cdn];
+		if (row.item_code && row.rate) {
+			frappe.db.get_value("Item", row.item_code, "mrp")
+				.then(r => {
+					if (r.message && r.message.mrp) {
+						let mrp = flt(r.message.mrp);
+						if (flt(row.rate) > mrp) {
+							frappe.msgprint({ 
+								message: __('Rate cannot be greater than MRP ({0})', [mrp]),
+								indicator: 'red'
+							});
+							frappe.model.set_value(cdt, cdn, "rate", mrp);
+						}
+					}
+				});
+		}
 		frm.trigger("calculate_totals");
 		update_emi_amount(frm, cdt, cdn);
 		set_valuation_and_gross_profit(frm, cdt, cdn);
@@ -253,14 +253,16 @@ function set_finance_filter(frm) {
  */
 function update_emi_amount(frm, cdt, cdn) {
 	const row = locals[cdt][cdn];
-	if (frm.doc.docstatus !== 0) {
-		return;
-	}
-	const down_payment = flt(row.down_payment || 0);
-	const total_amount = flt(row.amount || 0);
-	const emi_amount = total_amount - down_payment;
+	if (frm.doc.docstatus !== 0) return;
 
-	frappe.model.set_value(cdt, cdn, 'emi_amount', Math.max(emi_amount, 0));
+	setTimeout(() => {
+		const total_amount = flt(row.amount || 0);
+		const down_payment = flt(row.down_payment || 0);
+		const emi_amount = total_amount - down_payment;
+
+		frappe.model.set_value(cdt, cdn, 'emi_amount', Math.max(emi_amount, 0));
+		calculate_total_emi_amount(frm);
+	}, 200);
 }
 
 frappe.ui.form.on('Sales Expenses', {
@@ -552,17 +554,17 @@ function show_payment_popup(frm) {
 * Updates grand total,rounded total and outstanding amount for buyback amount
 */
 function update_grand_total(frm) {
-    setTimeout(() => {
-        let grand_total = flt(frm.doc.grand_total || 0);
-        let buyback_amount = flt(frm.doc.buyback_amount || 0);
-        if (frm.doc.is_buyback) {
-            let adjusted_total = grand_total - buyback_amount;
-            frm.set_value('grand_total', adjusted_total);
-            frm.set_value('rounded_total', Math.round(adjusted_total));
-            frm.set_value(
-                'outstanding_amount',
-                Math.max(adjusted_total - flt(frm.doc.total_advance || 0), 0)
-            );
-        }
-    }, 500);
+	setTimeout(() => {
+		let grand_total = flt(frm.doc.grand_total || 0);
+		let buyback_amount = flt(frm.doc.buyback_amount || 0);
+		if (frm.doc.is_buyback) {
+			let adjusted_total = grand_total - buyback_amount;
+			frm.set_value('grand_total', adjusted_total);
+			frm.set_value('rounded_total', Math.round(adjusted_total));
+			frm.set_value(
+				'outstanding_amount',
+				Math.max(adjusted_total - flt(frm.doc.total_advance || 0), 0)
+			);
+		}
+	}, 500);
 }
