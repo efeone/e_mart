@@ -3,24 +3,40 @@
 
 frappe.ui.form.on("Barcode Tool", {
     refresh(frm) {
-        // Disable save and replace with Preview & Print
-        frm.disable_save();
-        frm.page.set_primary_action(__('Preview & Print Barcodes'), () => {
-            open_barcode_preview(frm);
+    // Disable save
+    frm.disable_save();
+
+    // Remove old primary action (Preview & Print)
+    frm.page.clear_primary_action();
+
+    // Set Raw Print Labels (All Qty) as PRIMARY button (single, not grouped)
+    frm.page.set_primary_action(__('Print Barcode'), function() {
+        if (!frm.doc.item_table || !frm.doc.item_table.length) {
+            frappe.msgprint("No items selected for printing");
+            return;
+        }
+
+        // Trigger Print Format "barcode_tool"
+        frm.print_doc({
+            print_format: 'barcode_tool',  // your Print Format name
+            no_letterhead: true             // raw printing
         });
-        // Add "Get Items From" menu
-        frm.page.add_inner_button(__('Purchase Receipt'), function () {
-            get_items_from_documents(frm, "Purchase Receipt");
-        }, __('Get Items From'));
+    });
 
-        frm.page.add_inner_button(__('Purchase Invoice'), function () {
-            get_items_from_documents(frm, "Purchase Invoice");
-        }, __('Get Items From'));
+    // Keep “Get Items From” buttons in the inner menu
+    frm.page.add_inner_button(__('Purchase Receipt'), function () {
+        get_items_from_documents(frm, "Purchase Receipt");
+    }, __('Get Items From'));
 
-        frm.page.add_inner_button(__('Purchase Order'), function () {
-            get_items_from_documents(frm, "Purchase Order");
-        }, __('Get Items From'));
-    },
+    frm.page.add_inner_button(__('Purchase Invoice'), function () {
+        get_items_from_documents(frm, "Purchase Invoice");
+    }, __('Get Items From'));
+
+    frm.page.add_inner_button(__('Purchase Order'), function () {
+        get_items_from_documents(frm, "Purchase Order");
+    }, __('Get Items From'));
+},
+
 
     purchase_document(frm) {
         if (!frm.doc.purchase_document) return;
@@ -90,6 +106,7 @@ frappe.ui.form.on("Barcode List", {
                     callback(bar) {
                         if (bar.message) {
                             row.rendered_barcode = bar.message;
+                            frappe.modal.set_value(cdt, cdn, "rendered_barcode", bar.message);
                             frm.refresh_field("item_table");
                         }
                     }
@@ -165,11 +182,11 @@ function build_preview_html(content) {
                     .barcode-container {
                         display: flex;
                         flex-wrap: wrap;
-                        width: 38mm; /* 1 cards per row */
+                        width: 76mm; /* page width for 2 barcodes per row */
                     }
 
                     .barcode-item {
-                        width: 38mm;
+                        width: 38mm; /* each barcode half the page width */
                         height: 25mm;
                         display: flex;
                         align-items: center;
