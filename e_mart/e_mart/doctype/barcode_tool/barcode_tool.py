@@ -51,7 +51,7 @@ def render_item_barcode(item_code):
 
     item = frappe.get_doc("Item", item_code)
     mrp = item.get("mrp")
-    erp = item.get("valuation_rate")
+    erp = item.get("erp")
 
     # Load the print format template
     template = frappe.get_doc("Print Format", "Item Barcode").html

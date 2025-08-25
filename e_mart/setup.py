@@ -182,6 +182,12 @@ def get_item_custom_fields():
 				"insert_after": "stock_uom"
 			},
 			{
+				"fieldname": "erp",
+				"fieldtype": "Float",
+				"label": "ERP",
+				"insert_after": "mrp"
+			},
+			{
 				"fieldname": "sales_expense_contribution",
 				"fieldtype": "Data",
 				"label": "Sales Expense Contribution",
