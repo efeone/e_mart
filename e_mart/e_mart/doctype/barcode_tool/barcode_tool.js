@@ -160,16 +160,59 @@ function build_preview_html(content) {
             <head>
                 <title>Barcode Preview</title>
                 <style>
-                    body { font-family: Arial, sans-serif; margin: 10px; }
-                    .barcode-container { display: flex; flex-wrap: wrap; gap: 0; }
+                    body { font-family: Arial, sans-serif; margin: 5px; }
+
+                    .barcode-container {
+                        display: flex;
+                        flex-wrap: wrap;
+                        width: 38mm; /* 1 cards per row */
+                    }
+
                     .barcode-item {
-                        width: 90mm; height: 50mm;
-                        display: inline-block; text-align: center;
-                        margin: 2px; padding: 0; overflow: hidden;
-                        border: none; page-break-inside: avoid;
+                        width: 38mm;
+                        height: 25mm;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        text-align: center;
+                        margin: 0;
+                        padding: 2px;
+                        overflow: hidden;
+                        box-sizing: border-box;
+                        page-break-inside: avoid;
+                    }
+
+                    .barcode-content {
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        overflow: hidden;
+                    }
+
+                    .barcode-content img,
+                    .barcode-content svg {
+                        max-width: 100%;
+                        max-height: 60%; /* give space for text below */
+                        object-fit: contain;
+                    }
+
+                    .barcode-content div,
+                    .barcode-content span {
+                        font-size: 9px; /* small enough to fit */
+                        line-height: 1.1;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                     }
                     .toolbar { text-align: center; margin-bottom: 10px; }
-                    @media print { .toolbar { display: none; } }
+                    @media print {
+                        .toolbar { display: none; }
+                        body { margin: 0; }
+                        @page { size: auto; margin: 0; } /* roll printer style */
+                    }
                 </style>
             </head>
             <body>
