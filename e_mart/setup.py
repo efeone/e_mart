@@ -666,6 +666,21 @@ def get_sales_invoice_custom_fields():
 				"insert_after": "sales_type",
 				"depends_on": "eval:doc.sales_type == 'EMI'"
 			},
+			{
+				"fieldname": "sales_man",
+				"fieldtype": "Link",
+				"label": "Sales Man",
+				"options": "Employee",
+				"insert_after": "is_debit_note"
+			},
+			{
+				"fieldname": "sales_man_name",
+				"fieldtype": "Data",
+				"label": "Sales Man Name",
+				"insert_after": "sales_man",
+				"fetch_from": "sales_man.employee_name",
+				"read_only": 1
+			},
 		]
 	}
 
