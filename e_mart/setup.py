@@ -21,6 +21,7 @@ def after_install():
 	create_custom_fields(get_mode_of_payment_custom_fields(), ignore_validate=True, update=True)
 	create_custom_fields(get_sales_order_custom_fields(),ignore_validate=True,update=True)
 	create_custom_fields(get_sales_team_custom_fields(),ignore_validate=True,update=True)
+	create_custom_fields(get_address_custom_fields(),ignore_validate=True,update=True)
 
 	create_property_setters(get_property_setters())
 
@@ -43,6 +44,7 @@ def before_uninstall():
 	delete_custom_fields(get_mode_of_payment_custom_fields())
 	delete_custom_fields(get_sales_order_custom_fields())
 	delete_custom_fields(get_sales_team_custom_fields())
+	delete_custom_fields(get_address_custom_fields())
 
 def delete_custom_fields(custom_fields: dict):
 	"""
@@ -422,7 +424,22 @@ def get_mode_of_payment_custom_fields():
 				"insert_after": "enabled"
 			}
 		]
-	}	
+	}
+
+def get_address_custom_fields():
+	"""
+	Custom fields that need to be added to the Address DocType
+	"""
+	return {
+		"Address": [
+			{
+				"fieldname": "whatsapp",
+				"fieldtype": "Data",
+				"label": "WhatsApp",
+				"insert_after": "phone"
+			}
+		]
+	}		
 
 def get_task_custom_fields():
 	"""
@@ -670,7 +687,8 @@ def get_sales_invoice_custom_fields():
 				"options": "Customer",
 				"label": "EMI Provider",
 				"insert_after": "sales_type",
-				"depends_on": "eval:doc.sales_type == 'EMI'"
+				"depends_on": "eval:doc.sales_type == 'EMI'",
+				"allow_on_submit": 1
 			},
 			{
 				"fieldname": "sales_man",
